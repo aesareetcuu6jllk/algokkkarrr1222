@@ -4,8 +4,8 @@ from ..core.managers import edit_or_reply
 plugin_category = "البحث"
 
 @l313l.ar_cmd(
-    pattern="المطور$",
-    command=("المطور", plugin_category),
+    pattern="(مطور|المطور)$",
+    command=("مطور", plugin_category),
     info={
         "header": "لعرض معلومات المطور",
         "الاستـخـدام": "{tr}المطور - لعرض معلومات مطور البوت",
