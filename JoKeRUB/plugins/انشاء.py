@@ -1,24 +1,26 @@
-import asyncio
-import random
-from asyncio.exceptions import TimeoutError
-
-from telethon import events
-from repthon.utils import admin_cmd
-from ..helpers.utils import reply_id
 from JoKeRUB import l313l
 
-# الي يخمط ويكول من كتابتي الا امه انيجه وقد أعذر من أنذر
-# السلام على الحسين وعلى الأرواح التي حلت بفنائك، ولعن الله قاتليك
+# رابط البصمة (ثابت داخل الكود)
+URL = "https://t.me/SEFHELLAS/312"  # غيره حسب الرابط إلي تريده
 
-@l313l.on(admin_cmd(pattern="زيج$"))
-async def jepmeme(memejep):
-    Rep = await reply_id(memejep)
-    url = "https://t.me/SEFHELLAS/312"
-    await memejep.client.send_file(
-        memejep.chat_id,
-        url,
-        caption="",
-        parse_mode="html",
-        reply_to=Rep
-    )
-    await memejep.delete()
+# دالة لجلب reply_id إذا موجود
+async def reply_id(event):
+    if event.reply_to_msg_id:
+        return event.reply_to_msg_id
+    return None
+
+@l313l.on((pattern="زيج$"))
+async def send_zig_file(event):
+    reply = await reply_id(event)
+
+    try:
+        await event.client.send_file(
+            event.chat_id,
+            URL,
+            caption="",
+            reply_to=reply
+        )
+    except Exception as e:
+        await event.reply(f"حدث خطأ:\n{e}")
+
+    await event.delete()
