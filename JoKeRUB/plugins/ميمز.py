@@ -15,7 +15,7 @@ from JoKeRUB import l313l
 from ..helpers.utils import reply_id
 plugin_category = "tools"
 # الي يخمط ويكول من كتابتي الا امه انيجه وقد اعذر من انذر
-@l313l.on(admin_cmd(outgoing=True, pattern="ماي ارو$"))
+@l313l.on(admin_cmd(outgoing=True, pattern="زيج$"))
 async def jepmeme(memejep):
   Jep = await reply_id(memejep)
   url = f"https://t.me/SEFHELLAS/312"
