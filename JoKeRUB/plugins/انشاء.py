@@ -1,11 +1,10 @@
 from JoKeRUB import l313l
 from telethon.tl import functions
-
 from ..Config import Config
 from ..core.managers import edit_delete, edit_or_reply
 from ..utils.tools import create_supergroup
 
-plugin_category = "الادوات"
+plugin_category = "البحث"
 
 @l313l.arab_cmd(
     pattern="انشاء (كروب|خارق|قناه) ([\s\S]*)",
