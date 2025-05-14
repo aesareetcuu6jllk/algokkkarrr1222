@@ -1,26 +1,19 @@
 from JoKeRUB import l313l
+from ..helpers.utils import reply_id  # تأكد أنها موجودة
 
-# رابط البصمة (ثابت داخل الكود)
-URL = "https://t.me/SEFHELLAS/312"  # غيره حسب الرابط إلي تريده
-
-# دالة لجلب reply_id إذا موجود
-async def reply_id(event):
-    if event.reply_to_msg_id:
-        return event.reply_to_msg_id
-    return None
+# رابط ثابت
+URL = "https://t.me/SEFHELLAS/312"  # غيره إذا تريد
 
 @l313l.on((pattern="زيج$"))
-async def send_zig_file(event):
-    reply = await reply_id(event)
-
+async def _(event):
+    rpl = await reply_id(event)
     try:
         await event.client.send_file(
             event.chat_id,
             URL,
             caption="",
-            reply_to=reply
+            reply_to=rpl
         )
     except Exception as e:
         await event.reply(f"حدث خطأ:\n{e}")
-
     await event.delete()
