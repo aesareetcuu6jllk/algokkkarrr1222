@@ -15,9 +15,9 @@ from JoKeRUB import l313l
 from ..helpers.utils import reply_id
 plugin_category = "tools"
 # الي يخمط ويكول من كتابتي الا امه انيجه وقد اعذر من انذر
-@l313l.on(admin_cmd(outgoing=True, pattern="ززيج$"))
-async def aljoker313(joker313):
-  rl = random.randint(1,385)
+@l313l.on(admin_cmd(outgoing=True, pattern="ماي ارو$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
   url = f"https://t.me/SEFHELLAS/312"
-  await joker313.client.send_file(joker313.chat_id,url,caption="᯽︙ BY : @jepthon 🎀",parse_mode="html")
-  await joker313.delete()
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
