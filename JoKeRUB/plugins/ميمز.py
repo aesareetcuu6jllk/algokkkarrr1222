@@ -1,3 +1,8 @@
+#all write Codes By Team Aljoker @jepthon
+#By Hussein @lMl10l
+import asyncio
+import random
+import re
 import json
 import base64
 from telethon.tl.functions.messages import ImportChatInviteRequest as Get
@@ -24,10 +29,10 @@ async def jepmeme(memejep):
   await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
   await memejep.delete()
 
-@l313l.on(admin_cmd(outgoing=True, pattern="احبك مصطفى$"))
+@l313l.on(admin_cmd(outgoing=True, pattern="بلتفك$"))
 async def jepmeme(memejep):
   Jep = await reply_id(memejep)
-  url = f"https://t.me/yyegksgfdg/12"
+  url = f"https://t.me/NC2CN/7"
   await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
   await memejep.delete()
 @l313l.on(admin_cmd(outgoing=True, pattern="انا ماشي$"))
@@ -42,3 +47,97 @@ async def jepmeme(memejep):
   url = f"https://t.me/my_7_8/4"
   await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
   await memejep.delete()
+
+@l313l.on(admin_cmd(outgoing=True, pattern="انصدمت$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/8"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="فك عيوني$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/10"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="امرع$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/13"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="الجبور$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/14"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+@l313l.on(admin_cmd(outgoing=True, pattern="كرنج$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/730"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="سيلوش$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/734"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+@l313l.on(admin_cmd(outgoing=True, pattern="ام لحلقوم$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/737"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+@l313l.on(admin_cmd(outgoing=True, pattern="شموتك$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/738"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="بكيفك$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/739"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="نصو$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/741"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="ياهو انت$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/745"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="اضحكله$"))
+async def jepmeme(memejep):
+  Jep = await reply_id(memejep)
+  url = f"https://t.me/NC2CN/751"
+  await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
+  await memejep.delete()
+
