@@ -1411,3 +1411,18 @@ async def jepmeme(memejep):
     url = "https://t.me/AJSJ36/1348"
     await memejep.client.send_file(memejep.chat_id, url, caption="", parse_mode="html", reply_to=Jep)
     await memejep.delete()
+
+
+@l313l.on(admin_cmd(outgoing=True, pattern="انت لمالك$"))
+async def jepmeme(memejep):
+    Jep = await reply_id(memejep)
+    url = "https://t.me/AJSJ36/1542"
+    await memejep.client.send_file(memejep.chat_id, url, caption="", parse_mode="html", reply_to=Jep)
+    await memejep.delete()
+
+@l313l.on(admin_cmd(outgoing=True, pattern="ارفعني$"))
+async def jepmeme(memejep):
+    Jep = await reply_id(memejep)
+    url = "https://t.me/AJSJ36/1544"
+    await memejep.client.send_file(memejep.chat_id, url, caption="", parse_mode="html", reply_to=Jep)
+    await memejep.delete()
