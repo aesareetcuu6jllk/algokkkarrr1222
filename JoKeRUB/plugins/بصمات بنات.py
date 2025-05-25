@@ -291,16 +291,16 @@ async def _(event):
 
 
 @l313l.ar_cmd(
-    pattern="(بصمات قط)$",
-    command=("بصمات قط", plugin_category),
-    info={
-        "header": "لعرض بصمات قط",
-        "الاستـخـدام": "{tr}بصمات قط",
-    },
+    pattern="(بصمات9)$",
+    command=("بصمات9", plugin_category),
+    info={
+        "header": "لعرض بصمات بنات السورس - الجزء السادس",
+        "الاستـخـدام": "{tr}بصمات6",
+    },
 )
 async def _(event):
-    await edit_or_reply(
-        event,
+    await edit_or_reply(
+        event,
         """
 ╭── ⌯ بصمات قط ⌯ ──╮
 
