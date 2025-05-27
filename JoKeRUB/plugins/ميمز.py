@@ -2687,7 +2687,7 @@ async def jepmeme(memejep):
     await memejep.client.send_file(memejep.chat_id, url, caption="", parse_mode="html", reply_to=Jep)
     await memejep.delete()
 
-@l313l.on(admin_cmd(outgoing=True, pattern="2اكل خره$"))
+@l313l.on(admin_cmd(outgoing=True, pattern="خره2$"))
 async def jepmeme(memejep):
     Jep = await reply_id(memejep)
     url = f"https://t.me/yyegksgfdg/1391"
