@@ -95,7 +95,7 @@ async def download_and_send_file(event, url, platform):
         await event.reply(f"❌ حدث خطأ: {e}")
 
 
-@l313l.on(events.NewMessage(pattern=r'^/اوامر التحميل$', outgoing=True))
+@l313l.on(events.NewMessage(pattern=r'^/اوامر تحميل2$', outgoing=True))
 async def send_welcome(event):
     msg = (
         "🎉 **أهلاً بك في بوت التحميل** \n"
