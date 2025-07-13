@@ -263,7 +263,7 @@ async def command_handler(event):
         else:
             await event.reply("⚠️ لا توجد عملية جارية لإيقافها.")
 
-@l313l.on(events.NewMessage(pattern=r'\.اوامر النقل'))
+@l313l.on(events.NewMessage(pattern=r'\.اوامر النقل', outgoing=True))
 async def commands_info(event):
     help_text = (
         "📋 **قائمة الأوامر المتاحة:**\n\n"
