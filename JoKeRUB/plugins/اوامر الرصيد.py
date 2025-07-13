@@ -11,12 +11,12 @@ TON_FILE = "ton_address.txt"
 ETH_FILE = "eth_number.txt"    # رقم الاثير
 USDT_FILE = "usdt_number.txt"  # رقم اليوستد
 
-# ======== أوامر الرصيد - القائمة الرئيسية ========
 @l313l.on(events.NewMessage(pattern=r"\.اوامر الرصيد", outgoing=True))
 async def show_balance_sections(event):
     await event.reply(
         "**📦 أقسام أوامر الرصيد والمحافظ:**\n\n"
         "⥾ `.اوامر الاسيا`\n"
+        "⥾ `.اوامر الماستر`\n"   # <- أضفت هنا أمر الماستر
         "⥾ `.اوامر الكاش`\n"
         "⥾ `.اوامر الكورك`\n"
         "⥾ `.اوامر التون`\n"
@@ -24,6 +24,57 @@ async def show_balance_sections(event):
         "⥾ `.اوامر اليوستد`\n\n"
         "✦ أرسل أي أمر منها لعرض التعليمات الخاصة به."
     )
+
+from telethon import events
+import os
+
+MASTER_FILE = "master_number.txt"
+
+# ======== حفظ وتغيير وعرض ماستر ========
+async def save_master_number(event, number):
+    with open(MASTER_FILE, "w") as f:
+        f.write(number)
+    await event.reply(f"تم حفظ رقم الماستر: `{number}`")
+
+@l313l.on(events.NewMessage(pattern=r"\.رقم ماستر (\d+)", outgoing=True))
+async def save_master(event):
+    number = event.pattern_match.group(1)
+    await save_master_number(event, number)
+
+@l313l.on(events.NewMessage(pattern=r"\.تغ ماستر (\d+)", outgoing=True))
+async def change_master(event):
+    number = event.pattern_match.group(1)
+    await save_master_number(event, number)
+
+@l313l.on(events.NewMessage(pattern=r"\.ماستر", outgoing=True))
+async def show_master(event):
+    if os.path.exists(MASTER_FILE):
+        with open(MASTER_FILE, "r") as f:
+            number = f.read().strip()
+        await event.reply(f"رقم الماستر المحفوظ هو: `{number}`")
+    else:
+        await event.reply("لا يوجد رقم ماستر محفوظ بعد.")
+
+@l313l.on(events.NewMessage(pattern=r"\.حذف ماستر", outgoing=True))
+async def delete_master(event):
+    if os.path.exists(MASTER_FILE):
+        os.remove(MASTER_FILE)
+        await event.reply("تم حذف رقم الماستر بنجاح.")
+    else:
+        await event.reply("لا يوجد رقم ماستر للحذف.")
+
+# ======== امر اوامر الماستر ========
+@l313l.on(events.NewMessage(pattern=r"\.اوامر الماستر", outgoing=True))
+async def master_commands(event):
+    commands_text = (
+        "قائمة أوامر الماستر:\n"
+        "• .رقم ماستر <رقم> — لحفظ رقم الماستر\n"
+        "• .تغ ماستر <رقم> — لتغيير رقم الماستر\n"
+        "• .ماستر — لعرض رقم الماستر المحفوظ\n"
+        "• .حذف ماستر — لحذف رقم الماستر\n"
+    )
+    await event.reply(commands_text)
+
 
 # ======== أوامر آسيا ========
 @l313l.on(events.NewMessage(pattern=r"\.اوامر الاسيا", outgoing=True))
