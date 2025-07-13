@@ -44,14 +44,7 @@ async def show_convert_instructions(event):
     )
 
 # أمر تنفيذ تحويل الرصيد بصيغة قابلة للنسخ
-@l313l.on(events.NewMessage(pattern=r'^\.تحويل\s+(\d+)\s+(\d+)$', outgoing=True))
-async def convert_handler(event):
-    number = event.pattern_match.group(1)
-    amount = event.pattern_match.group(2)
 
-    result = f"```\n*123*{amount}*{number}#\n```"
-
-    await event.reply(result)
 
 
 from telethon import events
