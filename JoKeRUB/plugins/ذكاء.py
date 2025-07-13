@@ -51,3 +51,12 @@ async def ai_handler(event):
 
     response = await chat_with_gemini(question)  # الحصول على الرد من الذكاء الاصطناعي
     await event.reply(response)  # إرسال الرد للمستخدم
+from JoKeRUB import l313l
+from telethon import events
+
+@l313l.on(events.NewMessage(pattern=r'^\.اوامر الذكاء$', outgoing=True))
+async def download_commands(event):
+    await event.reply(   
+        "`ذكاء + السوال.`\n\n"
+        "⌔︙المطور : @HELLASUserBot"
+    )
