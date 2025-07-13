@@ -99,7 +99,7 @@ async def download_and_send_file(event, url, platform):
 async def send_welcome(event):
     msg = (
         "🎉 **أهلاً بك في بوت التحميل** \n"
-        "اكتب `.تيكتوك` أو `.انستا` أو `.يوتيوب` مع الرابط أو بالرد على رابط.")
+        "اكتب `.تيكتوك` أو `.انستكرام` أو `.يوتيوب` مع الرابط أو بالرد على رابط.")
     await event.reply(msg)
 
 
@@ -108,7 +108,7 @@ async def tiktok_cmd(event):
     url = event.pattern_match.group(1) or (await event.get_reply_message()).text.strip()
     await download_and_send_file(event, url, "TikTok")
 
-@l313l.on(events.NewMessage(pattern=r"\.انستا(?: (.*))?", outgoing=True))
+@l313l.on(events.NewMessage(pattern=r"\.انستكرام(?: (.*))?", outgoing=True))
 async def insta_cmd(event):
     url = event.pattern_match.group(1) or (await event.get_reply_message()).text.strip()
     await download_and_send_file(event, url, "Instagram")
