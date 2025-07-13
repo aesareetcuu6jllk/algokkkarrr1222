@@ -28,7 +28,7 @@ async def ton_command(event):
 async def save_address(event, address):
     with open(TON_FILE, "w") as f:
         f.write(address)
-    await event.reply(f"تم حفظ عنوان تون: {`address`}")
+    await event.reply(f"تم حفظ عنوان تون: `{address}`")
 
 @l313l.on(events.NewMessage(pattern=r"\.ادرس تون (.+)", outgoing=True))
 async def save_ton_address(event):
@@ -59,6 +59,6 @@ async def show_ton_address(event):
     if os.path.exists(TON_FILE):
         with open(TON_FILE, "r") as f:
             address = f.read().strip()
-        await event.reply(f"عنوان تون المحفوظ هو: {`address`}")
+        await event.reply(f"عنوان تون المحفوظ هو: `{address}`")
     else:
         await event.reply("لا يوجد عنوان تون محفوظ بعد.")
