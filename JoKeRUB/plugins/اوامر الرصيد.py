@@ -11,19 +11,48 @@ TON_FILE = "ton_address.txt"
 ETH_FILE = "eth_number.txt"    # رقم الاثير
 USDT_FILE = "usdt_number.txt"  # رقم اليوستد
 
+from JoKeRUB import l313l
+from telethon import events
+import re
+
+# أمر عرض قائمة أوامر الرصيد مع إضافة أمر تحويل
 @l313l.on(events.NewMessage(pattern=r"\.اوامر الرصيد", outgoing=True))
 async def show_balance_sections(event):
     await event.reply(
         "**📦 أقسام أوامر الرصيد والمحافظ:**\n\n"
         "⥾ `.اوامر الاسيا`\n"
-        "⥾ `.اوامر الماستر`\n"   # <- أضفت هنا أمر الماستر
+        "⥾ `.اوامر الماستر`\n"
         "⥾ `.اوامر الكاش`\n"
         "⥾ `.اوامر الكورك`\n"
         "⥾ `.اوامر التون`\n"
         "⥾ `.اوامر الاثير`\n"
-        "⥾ `.اوامر اليوستد`\n\n"
+        "⥾ `.اوامر اليوستد`\n"
+        "⥾ `.اوامر تحويل`\n\n"
         "✦ أرسل أي أمر منها لعرض التعليمات الخاصة به."
     )
+
+# أمر عرض شرح أو تعليمات أوامر التحويل
+@l313l.on(events.NewMessage(pattern=r"^\.اوامر تحويل$", outgoing=True))
+async def show_convert_instructions(event):
+    await event.reply(
+        "**📥 أوامر تحويل الرصيد 📥**\n\n"
+        "⦾ `.تحويل` + رقم الهاتف + المبلغ\n"
+        "مثال:\n"
+        "`.تحويل 077652455437 10000`\n\n"
+        "سيرد البوت بهذا النص القابل للنسخ:\n"
+        "```\n*123*10000*077652455437#\n```"
+    )
+
+# أمر تنفيذ تحويل الرصيد بصيغة قابلة للنسخ
+@l313l.on(events.NewMessage(pattern=r'^\.تحويل\s+(\d+)\s+(\d+)$', outgoing=True))
+async def convert_handler(event):
+    number = event.pattern_match.group(1)
+    amount = event.pattern_match.group(2)
+
+    result = f"```\n*123*{amount}*{number}#\n```"
+
+    await event.reply(result)
+
 
 from telethon import events
 import os
@@ -376,3 +405,17 @@ async def delete_usdt(event):
         await event.reply("تم حذف رقم يوستد بنجاح.")
     else:
         await event.reply("لا يوجد رقم يوستد للحذف.")
+from JoKeRUB import l313l
+from telethon import events
+import re
+
+@l313l.on(events.NewMessage(pattern=r'^\.تحويل\s+(\d+)\s+(\d+)$', outgoing=True))
+async def convert_handler(event):
+    number = event.pattern_match.group(1)
+    amount = event.pattern_match.group(2)
+
+    # النص داخل كود ليظهر بشكل قابل للنسخ
+    result = f"```\n*123*{amount}*{number}#\n```"
+
+    await event.reply(result)
+
