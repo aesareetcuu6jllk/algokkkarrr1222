@@ -1,8 +1,11 @@
 from JoKeRUB import l313l
 from telethon import events
+from telethon.errors import YouBlockedUserError
 import asyncio
 
-# حالة التكرار
+# الحالات العامة للنشر والتكرار
+final_krobats_active = False
+final_limited_broadcast = False
 repeat_active = False
 
 # عرض قائمة أوامر النشر
@@ -24,9 +27,13 @@ async def show_publish_commands(event):
         "🔹 **أمر التكرار (يعمل فقط في المجموعات):**\n"
         "▪️ `.مكرر 300 10000`\n"
         "↳ تكرار الرسالة التي ترد عليها 10000 مرة، كل 300 ثانية بين كل تكرار.\n\n"
+        "🔹 **أوامر مساعدة:**\n"
         "▪️ `.ايقاف التكرار`\n"
-         "▪️ `.فحص النشر`\n"
-         "▪️ `.حالتي`\n"
+        "↳ إيقاف عملية التكرار المستمرة.\n\n"
+        "▪️ `.فحص النشر`\n"
+        "↳ يعرض حالة كل عمليات النشر الجارية.\n\n"
+        "▪️ `.حالتي`\n"
+        "↳ فحص إذا كنت محظور من @SpamBot.\n\n"
         "🔹 **تعليمات هامة:**\n"
         "• قم بالرد على الرسالة التي تريد نشرها قبل استخدام أوامر النشر المحددة.\n"
         "• الأوامر الخاصة بالإيقاف تعمل فورًا بدون الحاجة لرد.\n"
@@ -34,9 +41,9 @@ async def show_publish_commands(event):
     )
     await event.respond(message)
 
-
-@client.on(events.NewMessage(pattern=r"\.حالتي(?: |$)(.*)"))
-async def _(event):
+# أمر فحص حالتك من @SpamBot
+@l313l.on(events.NewMessage(pattern=r"\.حالتي(?: |$)(.*)"))
+async def check_my_status(event):
     await event.edit("**- يتم التأكد من حالتك إذا كنت محظورًا أو لا...**")
     
     async with event.client.conversation("@SpamBot") as conv:
@@ -45,11 +52,12 @@ async def _(event):
             response = await conv.get_response()
             await event.client.send_read_acknowledge(conv.chat_id)
         except YouBlockedUserError:
-            await event.edit("**أولًا، قم بإلغاء حظر @SpamBot ثم حاول مجددًا.**")
+            await event.edit("**❌ أولًا، قم بإلغاء حظر @SpamBot ثم حاول مجددًا.**")
             return
 
-    await event.edit(f"- {response.message}\n@HELLASUserBot")
+    await event.edit(f"- {response.message}\n\n@HELLASUserBot")
 
+# أمر فحص حالة عمليات النشر
 @l313l.on(events.NewMessage(from_users='me', pattern=r'^\.فحص النشر$'))
 async def check_broadcast_status(event):
     await event.delete()
@@ -64,7 +72,5 @@ async def check_broadcast_status(event):
         f"🔢 النشر المحدود (عدد معين): {status_limited}\n"
         f"♻️ التكرار المتواصل: {status_repeat}\n"
     )
-
     await event.respond(message)
-
 
