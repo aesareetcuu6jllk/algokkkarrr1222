@@ -67,18 +67,24 @@ async def download_and_send_file(event, url, platform):
         await event.reply(f"❌ خطأ أثناء التحميل: {e}")
 
 # أمر المساعدة
-@l313l.on(events.NewMessage(pattern=r'^/اوامر تحميل2$', outgoing=True))
-async def send_welcome(event):
-    msg = (
-        "🎉 **أهلاً بك في بوت التحميل**\n"
-        "اكتب أحد الأوامر التالية مع رابط:\n\n"
-        "` .يوتيوب <الرابط> `\n"
-        "` .تيكتوك <الرابط> `\n"
-        "` .فيس <الرابط> `\n"
-        "` .تويتر <الرابط> `\n"
-        "` .ساوند <الرابط> `"
+from JoKeRUB import l313l
+from telethon import events
+
+@l313l.on(events.NewMessage(pattern=r'^\.اوامر التنزيل$', outgoing=True))
+async def download_commands(event):
+    await event.reply(
+        "**📥 أوامر التنزيل المدعومة:**\n\n"
+        "⥾ `.يوتيوب + الرابط` أو الرد على رابط يوتيوب\n"
+        "⥾ `.تيكتوك + الرابط` أو الرد على رابط تيك توك\n"
+        "⥾ `.انستا + الرابط` أو الرد على رابط إنستغرام\n"
+        "⥾ `.فيس + الرابط` أو الرد على رابط فيسبوك\n"
+        "⥾ `.تويتر + الرابط` أو الرد على رابط تويتر\n"
+        "⥾ `.ساوند + الرابط` أو الرد على رابط ساوندكلاود\n\n"
+        "🎬 يتم إرسال الملفات إلى الرسائل المحفوظة (Saved Messages).\n"
+        "⚠️ تأكد أن الرابط مباشر لفيديو وليس قائمة تشغيل أو بث مباشر.\n\n"
+        "⌔︙المطور : @HELLASUserBot"
     )
-    await event.reply(msg)
+
 
 # أوامر التحميل
 @l313l.on(events.NewMessage(pattern=r"\.تيكتوك(?: (.*))?", outgoing=True))
