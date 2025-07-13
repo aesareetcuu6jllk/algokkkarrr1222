@@ -33,30 +33,4 @@ async def show_publish_commands(event):
     await event.respond(message)
 
 # أمر التكرار .مكرر
-@l313l.on(events.NewMessage(from_users='me', pattern=r'^\.مكرر (\d+)\s+(\d+)$'))
-async def repeated_sender(event):
-    await event.delete()
-    delay, count = map(int, event.pattern_match.groups())
-
-    message = await event.get_reply_message()
-    if not message:
-        return await event.respond("❌ يجب الرد على الرسالة التي تريد تكرارها!")
-
-    await event.respond(f"✅ سيتم تكرار الرسالة {count} مرة كل {delay} ثانية.\n🛑 للإيقاف، أرسل `.ايقاف_مكرر`.")
-
-    global repeat_active
-    repeat_active = True
-    for i in range(count):
-        if not repeat_active:
-            break
-        try:
-            if message.text:
-                await event.respond(message.text)
-            elif message.media:
-                await l313l.send_file(event.chat_id, message.media, caption=message.text)
-            await asyncio.sleep(delay)
-        except Exception as e:
-            print(f"❌ خطأ أثناء التكرار: {e}")
-
-# أمر إيقاف التكرار
 
