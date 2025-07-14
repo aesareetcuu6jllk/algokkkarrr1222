@@ -2,7 +2,7 @@ from JoKeRUB import l313l
 import requests
 import random
 
-@l313l.on(events.NewMessage(pattern=r'^\.معلومات انستا (.+)$', outgoing=True))
+@l313l.on(events.NewMessage(pattern=r'^\.حساب انستا (.+)$', outgoing=True))
 async def insta_info(event):
     username = event.pattern_match.group(1).strip()
 
