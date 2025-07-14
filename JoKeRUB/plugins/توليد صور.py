@@ -4,8 +4,9 @@ import requests
 import io
 import random
 import time
+import re
 
-# بيانات البوت
+# أنماط الذكاء
 STYLE_MODIFIERS = {
     "سينمائي": "cinematic, detailed, masterpiece, high quality, 8k",
     "أنمي": "anime style, vibrant colors, dynamic pose, studio quality",
@@ -19,11 +20,11 @@ STYLE_MODIFIERS = {
     "واقعي": "photorealistic, hyperdetailed, sharp focus, natural lighting",
 }
 
-# ذاكرة مؤقتة للمستخدمين
+# تقييد الطلبات
 user_last_request = {}
 RATE_LIMIT_SECONDS = 5
 
-# دالة توليد الصور
+# دالة توليد الصورة مع تجميع الصور وإرسالها دفعة واحدة
 async def generate_image(event, prompt, count=1):
     chat = await event.get_chat()
     user_id = event.sender_id
@@ -39,6 +40,7 @@ async def generate_image(event, prompt, count=1):
 
     success = 0
     fail = 0
+    files_to_send = []
 
     for _ in range(min(count, 5)):
         try:
@@ -64,56 +66,70 @@ async def generate_image(event, prompt, count=1):
             image_url = random.choice(images)
             image_data = requests.get(image_url, timeout=30).content
             image_io = io.BytesIO(image_data)
-            image_io.name = "generated.jpg"
-            await l313l.send_file(event.chat_id, image_io)
+            image_io.name = f"generated_{success+1}.jpg"
+            files_to_send.append(image_io)
             success += 1
 
         except Exception as e:
             await event.reply(f"⚠️ خطأ أثناء توليد الصورة:\n{e}")
             fail += 1
 
+    if success > 0:
+        try:
+            await l313l.send_file(event.chat_id, files=files_to_send)
+        except Exception as e:
+            await event.reply(f"❌ خطأ أثناء إرسال الصور:\n{e}")
+
     if count > 1:
         await event.reply(f"✅ تم توليد {success} صورة، وفشل {fail}.")
 
-@l313l.on(events.NewMessage(pattern=r"\.اوامر ذكاء الصور"))
+
+# أمر أوامر الذكاء (خاص بالمالك فقط)
+@l313l.on(events.NewMessage(pattern=r'^\.اوامر الذكاء$', outgoing=True))
 async def image_ai_commands(event):
-    if event.text[0] in ("/", "#", "!"): return
+    me = await l313l.get_me()
+    if event.sender_id != me.id:
+        return
 
     text = (
         "**🤖 قائمة أوامر ذكاء الصور:**\n"
         "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
-        "• `.صنع صوره +الوصف` ⦙ لتوليد صورة بناءً على وصفك.\n"
-        "  ✦ مثال: `.صنع صوره +قطة تلبس نظارات` \n\n"
-        "• يمكن تحديد عدد الصور عبر `#` في نهاية الوصف.\n"
-        "  ✦ مثال: `.صنع صوره +رجل آلي في المستقبل #3`\n\n"
-        "• يمكنك استخدام أنماط خاصة بإضافة +النمط:\n"
-        "  ✦ مثال: `.صنع صوره +بنت في غابة +كرتون`\n\n"
-        "**🖌️ الأنماط المدعومة:**\n"
+        "• `.صنع صوره +الوصف` ⦙ لتوليد صورة بالذكاء الاصطناعي.\n"
+        "  ✦ مثال: `.صنع صوره +قطة تلبس نظارات`\n\n"
+        "• يمكنك تحديد عدد الصور بـ `#عدد`:\n"
+        "  ✦ `.صنع صوره +روبوت يطير #3`\n\n"
+        "• يمكن إضافة نمط (ستايل) للوصف:\n"
+        "  ✦ `.صنع صوره +بنت تقرأ كتاب +كرتون`\n\n"
+        "🖌️ الأنماط المتاحة:\n"
         "`كرتون`, `واقعي`, `سينمائي`, `فانتاسي`, `أنمي`, `مستقبلي`, `سايبربنك`, `كلاسيكي`, `مائي`, `تجريدي`\n"
         "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
-        "⌛ توجد مهلة 5 ثوانٍ بين كل طلب حماية للسيرفر.\n"
+        "⌛ مهلة 5 ثوانٍ بين كل طلب لحماية السيرفر."
     )
 
-    await event.reply(text)
+    await event.edit(text)
 
-# أمر صنع صورة عبر .صنع صوره
-@l313l.on(events.NewMessage(pattern=r"\.صنع صوره (.+)"))
+
+# أمر صنع صورة (خاص بالمالك فقط)
+@l313l.on(events.NewMessage(pattern=r"\.صنع صوره \+(.+)"))
 async def photo_generator(event):
     if event.text[0] in ("/", "#", "!"): return
-    input_text = event.pattern_match.group(1)
-    
-    # دعم #عدد في نهاية الوصف
-    import re
-    match = re.match(r"(.*?)\s*#(\d+)$", input_text.strip())
+
+    me = await l313l.get_me()
+    if event.sender_id != me.id:
+        return
+
+    input_text = event.pattern_match.group(1).strip()
+
+    match = re.match(r"(.*?)\s*#(\d+)$", input_text)
     if match:
         prompt = match.group(1).strip()
         count = int(match.group(2))
     else:
-        prompt = input_text.strip()
+        prompt = input_text
         count = 1
 
     if not prompt:
-        await event.reply("❌ يرجى كتابة وصف للصورة.")
+        await event.reply("❌ يرجى كتابة وصف بعد +")
         return
 
     await generate_image(event, prompt, count)
