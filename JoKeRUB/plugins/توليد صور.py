@@ -24,9 +24,8 @@ STYLE_MODIFIERS = {
 user_last_request = {}
 RATE_LIMIT_SECONDS = 5
 
-# دالة توليد الصورة مع تجميع الصور وإرسالها دفعة واحدة
+# دالة توليد الصورة
 async def generate_image(event, prompt, count=1):
-    chat = await event.get_chat()
     user_id = event.sender_id
 
     if user_id in user_last_request:
@@ -51,7 +50,6 @@ async def generate_image(event, prompt, count=1):
             )
 
             if response.status_code != 200:
-                await event.reply(f"❌ فشل الاتصال بالسيرفر (الكود: {response.status_code})")
                 fail += 1
                 continue
 
@@ -59,7 +57,6 @@ async def generate_image(event, prompt, count=1):
             images = data.get("url-image", [])
 
             if not images:
-                await event.reply("❌ لم يتم العثور على صور في الرد.")
                 fail += 1
                 continue
 
@@ -71,8 +68,8 @@ async def generate_image(event, prompt, count=1):
             success += 1
 
         except Exception as e:
-            await event.reply(f"⚠️ خطأ أثناء توليد الصورة:\n{e}")
             fail += 1
+            continue
 
     if success > 0:
         try:
@@ -84,42 +81,38 @@ async def generate_image(event, prompt, count=1):
         await event.reply(f"✅ تم توليد {success} صورة، وفشل {fail}.")
 
 
-# أمر أوامر الذكاء (خاص بالمالك فقط)
+# أوامر الذكاء الاصطناعي (خاص بالمالك فقط)
 @l313l.on(events.NewMessage(pattern=r'^\.اوامر الذكاء$', outgoing=True))
 async def image_ai_commands(event):
     me = await l313l.get_me()
     if event.sender_id != me.id:
         return
 
-    text = (
+    await event.edit(
         "**🤖 قائمة أوامر ذكاء الصور:**\n"
         "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
-        "• `.صنع صوره +الوصف` ⦙ لتوليد صورة بالذكاء الاصطناعي.\n"
-        "  ✦ مثال: `.صنع صوره +قطة تلبس نظارات`\n\n"
-        "• يمكنك تحديد عدد الصور بـ `#عدد`:\n"
-        "  ✦ `.صنع صوره +روبوت يطير #3`\n\n"
-        "• يمكن إضافة نمط (ستايل) للوصف:\n"
-        "  ✦ `.صنع صوره +بنت تقرأ كتاب +كرتون`\n\n"
-        "🖌️ الأنماط المتاحة:\n"
+        "• `.صنع صوره +الوصف` ⦙ توليد صورة.\n"
+        "  ✦ مثال: `.صنع صوره +قطة تلبس نظارات`\n"
+        "• لتوليد عدة صور:\n"
+        "  ✦ `.صنع صوره +روبوت يطير #3`\n"
+        "• لإضافة ستايل:\n"
+        "  ✦ `.صنع صوره +بنت تقرأ كتاب +كرتون`\n"
+        "🖌️ الأنماط:\n"
         "`كرتون`, `واقعي`, `سينمائي`, `فانتاسي`, `أنمي`, `مستقبلي`, `سايبربنك`, `كلاسيكي`, `مائي`, `تجريدي`\n"
-        "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
-        "⌛ مهلة 5 ثوانٍ بين كل طلب لحماية السيرفر."
+        "⌛ مهلة 5 ثوانٍ بين كل طلب."
     )
 
-    await event.edit(text)
 
-
-# أمر صنع صورة (خاص بالمالك فقط)
-@l313l.on(events.NewMessage(pattern=r"\.صنع صوره \+(.+)"))
+# أمر صنع صوره
+@l313l.on(events.NewMessage(pattern=r"\.صنع صوره \+(.+)", outgoing=True))
 async def photo_generator(event):
-    if event.text[0] in ("/", "#", "!"): return
-
     me = await l313l.get_me()
     if event.sender_id != me.id:
         return
 
     input_text = event.pattern_match.group(1).strip()
 
+    # استخراج العدد إن وجد
     match = re.match(r"(.*?)\s*#(\d+)$", input_text)
     if match:
         prompt = match.group(1).strip()
@@ -127,6 +120,13 @@ async def photo_generator(event):
     else:
         prompt = input_text
         count = 1
+
+    # فحص النمط داخل الوصف
+    for style_arabic, style_prompt in STYLE_MODIFIERS.items():
+        if f"+{style_arabic}" in prompt:
+            prompt = prompt.replace(f"+{style_arabic}", "").strip()
+            prompt += f", {style_prompt}"
+            break
 
     if not prompt:
         await event.reply("❌ يرجى كتابة وصف بعد +")
