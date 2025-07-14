@@ -125,7 +125,7 @@ async def ايقاف_التثبيت(event):
             return
     await event.reply(f"❌ لا يوجد تثبيت جاري لليوزر @{username}.")
 
-@l313l.on(events.NewMessage(outgoing=True, pattern=r"\.تجربه صيد"))
+@l313l.on(events.NewMessage(outgoing=True, pattern=r"\.اوامر اليوزرات"))
 async def شرح_تجربه_صيد(event):
     شرح = (
         "📌 **شرح أمر تجربة الصيد:**\n"
