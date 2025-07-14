@@ -26,6 +26,7 @@ RATE_LIMIT_SECONDS = 5
 
 # دالة توليد الصورة
 async def generate_image(event, prompt, count=1):
+    chat = await event.get_chat()
     user_id = event.sender_id
 
     if user_id in user_last_request:
@@ -39,7 +40,6 @@ async def generate_image(event, prompt, count=1):
 
     success = 0
     fail = 0
-    files_to_send = []
 
     for _ in range(min(count, 5)):
         try:
@@ -50,6 +50,7 @@ async def generate_image(event, prompt, count=1):
             )
 
             if response.status_code != 200:
+                await event.reply(f"❌ فشل الاتصال بالسيرفر (الكود: {response.status_code})")
                 fail += 1
                 continue
 
@@ -57,62 +58,61 @@ async def generate_image(event, prompt, count=1):
             images = data.get("url-image", [])
 
             if not images:
+                await event.reply("❌ لم يتم العثور على صور في الرد.")
                 fail += 1
                 continue
 
             image_url = random.choice(images)
             image_data = requests.get(image_url, timeout=30).content
             image_io = io.BytesIO(image_data)
-            image_io.name = f"generated_{success+1}.jpg"
-            files_to_send.append(image_io)
+            image_io.name = "generated.jpg"
+            await l313l.send_file(event.chat_id, image_io)
             success += 1
 
         except Exception as e:
+            await event.reply(f"⚠️ خطأ أثناء توليد الصورة:\n{e}")
             fail += 1
-            continue
-
-    if success > 0:
-        try:
-            await l313l.send_file(event.chat_id, files=files_to_send)
-        except Exception as e:
-            await event.reply(f"❌ خطأ أثناء إرسال الصور:\n{e}")
 
     if count > 1:
         await event.reply(f"✅ تم توليد {success} صورة، وفشل {fail}.")
 
 
-# أوامر الذكاء الاصطناعي (خاص بالمالك فقط)
+# فقط للمالك: أوامر الذكاء
 @l313l.on(events.NewMessage(pattern=r'^\.اوامر الذكاء$', outgoing=True))
 async def image_ai_commands(event):
     me = await l313l.get_me()
     if event.sender_id != me.id:
         return
 
-    await event.edit(
+    text = (
         "**🤖 قائمة أوامر ذكاء الصور:**\n"
         "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
-        "• `.صنع صوره +الوصف` ⦙ توليد صورة.\n"
-        "  ✦ مثال: `.صنع صوره +قطة تلبس نظارات`\n"
-        "• لتوليد عدة صور:\n"
-        "  ✦ `.صنع صوره +روبوت يطير #3`\n"
-        "• لإضافة ستايل:\n"
-        "  ✦ `.صنع صوره +بنت تقرأ كتاب +كرتون`\n"
-        "🖌️ الأنماط:\n"
+        "• `.صنع صوره +الوصف` ⦙ لتوليد صورة بالذكاء الاصطناعي.\n"
+        "  ✦ مثال: `.صنع صوره +قطة تلبس نظارات`\n\n"
+        "• يمكنك تحديد عدد الصور بـ `#عدد`:\n"
+        "  ✦ `.صنع صوره +روبوت يطير #3`\n\n"
+        "• يمكن إضافة نمط (ستايل) للوصف:\n"
+        "  ✦ `.صنع صوره +بنت تقرأ كتاب +كرتون`\n\n"
+        "🖌️ الأنماط المتاحة:\n"
         "`كرتون`, `واقعي`, `سينمائي`, `فانتاسي`, `أنمي`, `مستقبلي`, `سايبربنك`, `كلاسيكي`, `مائي`, `تجريدي`\n"
-        "⌛ مهلة 5 ثوانٍ بين كل طلب."
+        "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
+        "⌛ مهلة 5 ثوانٍ بين كل طلب لحماية السيرفر."
     )
 
+    await event.edit(text)
 
-# أمر صنع صوره
-@l313l.on(events.NewMessage(pattern=r"\.صنع صوره \+(.+)", outgoing=True))
+
+# فقط للمالك: توليد صورة عبر .صنع صوره +وصف
+@l313l.on(events.NewMessage(pattern=r"\.صنع صوره \+(.+)"))
 async def photo_generator(event):
+    if event.text[0] in ("/", "#", "!"): return
+
     me = await l313l.get_me()
     if event.sender_id != me.id:
         return
 
     input_text = event.pattern_match.group(1).strip()
 
-    # استخراج العدد إن وجد
     match = re.match(r"(.*?)\s*#(\d+)$", input_text)
     if match:
         prompt = match.group(1).strip()
@@ -120,13 +120,6 @@ async def photo_generator(event):
     else:
         prompt = input_text
         count = 1
-
-    # فحص النمط داخل الوصف
-    for style_arabic, style_prompt in STYLE_MODIFIERS.items():
-        if f"+{style_arabic}" in prompt:
-            prompt = prompt.replace(f"+{style_arabic}", "").strip()
-            prompt += f", {style_prompt}"
-            break
 
     if not prompt:
         await event.reply("❌ يرجى كتابة وصف بعد +")
