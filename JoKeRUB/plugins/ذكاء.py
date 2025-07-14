@@ -54,9 +54,4 @@ async def ai_handler(event):
 from JoKeRUB import l313l
 from telethon import events
 
-@l313l.on(events.NewMessage(pattern=r'^\.اوامر الذكاء$', outgoing=True))
-async def download_commands(event):
-    await event.reply(   
-        "`ذكاء + السوال.`\n\n"
-        "⌔︙المطور : @HELLASUserBot"
-    )
+
