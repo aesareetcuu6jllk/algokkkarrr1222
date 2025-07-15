@@ -1,171 +1,313 @@
-from telethon import events, Button
+import re
+
+from telethon import Button, events
 from telethon.events import CallbackQuery
+
+from l313l.razan.resources.assistant import *
+from l313l.razan.resources.mybot import *
 from JoKeRUB import l313l
 from ..core import check_owner
+from ..Config import Config
 
-# رسالة القائمة الرئيسية
-MAIN_TEXT = (
-    "⦑ قائمة اوامر HELLAS  ⦒\n"
-    "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
-    "( .م1 )  ⦙ اوامر الادمن\n"
-    "( .م2 )  ⦙ اوامر المجموعة\n"
-    "( .م3 )  ⦙ اوامر الترحيب والردود\n"
-    "( .م4 )  ⦙ حماية خاص والتلكراف\n"
-    "( .م5 )  ⦙ اوامر المنشن والانتحال\n"
-    "( .م6 )  ⦙ اوامر التحميل والترجمة\n"
-    "( .م7 )  ⦙ اوامر المنع و القفل\n"
-    "( .م8 )  ⦙ اوامر التنظيف والتكرار\n"
-    "( .م9 )  ⦙ اوامر التخصيص والفارات\n"
-    "( .م10 ) ⦙ اوامر الوقتي و التشغيل\n"
-    "( .م11 ) ⦙ اوامر الكشف و الروابط\n"
-    "( .م12 ) ⦙ اوامر المساعدة والإذاعة\n"
-    "( .م13 ) ⦙ اوامر الارسال والاذكار\n"
-    "( .م14 ) ⦙ اوامر المـلصقات وكوكل\n"
-    "( .م15 ) ⦙ اوامر التسلية والميمز\n"
-    "( .م16 ) ⦙ اوامر الصيغ والجهات\n"
-    "( .م17 ) ⦙ اوامر التمبلر والزغرفة\n"
-    "( .م18 ) ⦙ اوامر الحساب والترفيه\n"
-    "( .م19 ) ⦙ اوامر اضافيه للسورس\n"
-    "( .م20 ) ⦙ اوامر بصمات الميمز\n"
-    "( .م21 ) ⦙ اوامر تجميع النقاط وبوت وعد\n"
-    "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
-    "᯽︙ اللهم صلِ على محمد و على آله محمد"
-)
+# نصوص محتويات كل زر (يمكن تعديل النصوص حسب طلبك)
+ROZADM = """⦑ أوامر الأدمن ⦒
+.م1 - أمر 1
+.م2 - أمر 2
+..."""
+GRTSTI = """⦑ أوامر الملصقات وصور ⦒
+.ملصق - إرسال ملصق
+.صورة - إرسال صورة
+..."""
+JMAN = """⦑ أوامر التسلية ⦒
+.نكتة - إرسال نكتة
+.حالة - إرسال حالة
+..."""
+TKPRZ = """⦑ أوامر التنظيف والتكرار ⦒
+.تنظيف - تنظيف المحادثة
+.تكرار - تكرار رسالة
+..."""
+ROZBOT = """⦑ أوامر البوت ⦒
+.بوت - معلومات البوت
+.تشغيل - تشغيل الموسيقى
+..."""
+JROZT = """⦑ أوامر الحساب ⦒
+.حساب - معلومات الحساب
+.رصيد - عرض الرصيد
+..."""
+JMTRD = """⦑ الترحيبات والردود ⦒
+.ترحيب - تعيين ترحيب
+.ردود - عرض الردود
+..."""
+ROZSEG = """⦑ الصيغ والجهات ⦒
+.صيغ - تنسيق النصوص
+.جهات - إدارة جهات الاتصال
+..."""
+JMGR1 = """⦑ المجموعات ⦒
+.مجموعات - عرض المجموعات
+.انضمام - الانضمام لمجموعة
+..."""
+ROZPRV = """⦑ الحماية والتلكراف ⦒
+.قفل - قفل نوع معين
+.فتح - فتح نوع معين
+..."""
+HERP = """⦑ الترفيه ⦒
+.لعب - ألعاب ممتعة
+.مسابقات - مسابقات يومية
+..."""
+T7SHIZ = """⦑ الانتحال والتقليد ⦒
+.منشن - منشن خاص
+.تقليد - تقليد عضو
+..."""
+CLORN = """⦑ القائمة الرئيسية ⦒
+.م1 - اوامر الادمن
+.م2 - اوامر المجموعة
+.م3 - اوامر الترحيب والردود
+...
+"""
 
-# زر عرض القائمة
-@l313l.on(events.NewMessage(pattern=r"^\.هيلاس اوامر$", outgoing=True))
-async def _(event):
-    buttons = [
-        [Button.inline("( .م1 ) ⦙ اوامر الادمن", b"m1"), Button.inline("( .م2 ) ⦙ اوامر المجموعة", b"m2"), Button.inline("( .م3 ) ⦙ اوامر الترحيب والردود", b"m3")],
-        [Button.inline("( .م4 ) ⦙ حماية خاص والتلكراف", b"m4"), Button.inline("( .م5 ) ⦙ اوامر المنشن والانتحال", b"m5"), Button.inline("( .م6 ) ⦙ اوامر التحميل والترجمة", b"m6")],
-        [Button.inline("( .م7 ) ⦙ اوامر المنع و القفل", b"m7"), Button.inline("( .م8 ) ⦙ اوامر التنظيف والتكرار", b"m8"), Button.inline("( .م9 ) ⦙ اوامر التخصيص والفارات", b"m9")],
-        [Button.inline("( .م10 ) ⦙ اوامر الوقتي و التشغيل", b"m10"), Button.inline("( .م11 ) ⦙ اوامر الكشف و الروابط", b"m11"), Button.inline("( .م12 ) ⦙ اوامر المساعدة والإذاعة", b"m12")],
-        [Button.inline("( .م13 ) ⦙ اوامر الارسال والاذكار", b"m13"), Button.inline("( .م14 ) ⦙ اوامر المـلصقات وكوكل", b"m14"), Button.inline("( .م15 ) ⦙ اوامر التسلية والميمز", b"m15")],
-        [Button.inline("( .م16 ) ⦙ اوامر الصيغ والجهات", b"m16"), Button.inline("( .م17 ) ⦙ اوامر التمبلر والزغرفة", b"m17"), Button.inline("( .م18 ) ⦙ اوامر الحساب والترفيه", b"m18")],
-        [Button.inline("( .م19 ) ⦙ اوامر اضافيه للسورس", b"m19"), Button.inline("( .م20 ) ⦙ اوامر بصمات الميمز", b"m20"), Button.inline("( .م21 ) ⦙ اوامر تجميع النقاط", b"m21")],
-    ]
-    await event.reply(MAIN_TEXT, buttons=buttons)
+ROE = "**♰ هـذه هي قائمة اوامـر سـورس 𝐇𝐞𝐥𝐥𝐚𝐬  ♰**"
+JEP_IC = ""  # ضع مسار صورة هنا إذا تريد
+
+if Config.TG_BOT_USERNAME is not None and tgbot is not None:
+
+    @tgbot.on(events.InlineQuery)
+    async def inline_handler(event):
+        builder = event.builder
+        result = None
+        query = event.text
+        await bot.get_me()
+        if query.startswith("اوامري") and event.query.user_id == bot.uid:
+            buttons = [
+                [Button.inline(" اوامر الادمن ", data="l313l0")],
+                [
+                    Button.inline(" اوامر البوت ", data="rozbot"),
+                    Button.inline(" الحساب ", data="Jmrz"),
+                    Button.inline(" المجموعات ", data="gro"),
+                ],
+                [
+                    Button.inline(" الصيغ و الجهات ", data="sejrz"),
+                    Button.inline(" الحماية و تلكراف ", data="grrz"),
+                ],
+                [
+                    Button.inline(" اوامر التسلية ", data="tslrzj"),
+                    Button.inline(" الترحيبات والردود ", data="r7brz"),
+                ],
+                [
+                    Button.inline(" اومر المساعدة ", data="krrznd"),
+                    Button.inline(" الملصقات وصور ", data="jrzst"),
+                ],
+                [
+                    Button.inline(" التكرار والتنظيف ", data="krrznd"),
+                    Button.inline(" الترفيه ", data="rfhrz"),
+                ],
+                [
+                    Button.inline(" التكرار والتنظيف ", data="iiers"),
+                    Button.inline(" الملصقات وصور ", data="jrzst"),
+                ],
+                [
+                    Button.inline(" الأكستـرا ", data="iiers"),
+                    Button.inline(" الانتحال والتقليد ", data="uscuxrz"),
+                ],
+            ]
+            if JEP_IC and JEP_IC.endswith((".jpg", ".png", "gif", "mp4")):
+                result = builder.photo(
+                    JEP_IC, text=ROE, buttons=buttons, link_preview=False
+                )
+            elif JEP_IC:
+                result = builder.document(
+                    JEP_IC,
+                    title="JoKeRUB",
+                    text=ROE,
+                    buttons=buttons,
+                    link_preview=False,
+                )
+            else:
+                result = builder.article(
+                    title="JoKeRUB",
+                    text=ROE,
+                    buttons=buttons,
+                    link_preview=False,
+                )
+            await event.answer([result] if result else None)
 
 
-# زر الرجوع للقائمة
-# زر الرجوع للقائمة
-@l313l.tgbot.on(CallbackQuery(data=b"main"))
+@bot.on(admin_cmd(outgoing=True, pattern="اوامر هيلاس"))
+async def repo(event):
+    if event.fwd_from:
+        return
+    F_O_1 = Config.TG_BOT_USERNAME
+    if event.reply_to_msg_id:
+        await event.get_reply_message()
+    response = await bot.inline_query(F_O_1, "اوامري")
+    await response[0].click(event.chat_id)
+    await event.delete()
+
+
+# هنا دوال الرد على كل زر مع النصوص وملاحة بين الصفحات
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"l313l0")))
 @check_owner
 async def _(event):
     buttons = [
-        [Button.inline("( .م1 ) ⦙ اوامر الادمن", b"m1"), Button.inline("( .م2 ) ⦙ اوامر المجموعة", b"m2"), Button.inline("( .م3 ) ⦙ اوامر الترحيب والردود", b"m3")],
-        [Button.inline("( .م4 ) ⦙ حماية خاص والتلكراف", b"m4"), Button.inline("( .م5 ) ⦙ اوامر المنشن والانتحال", b"m5"), Button.inline("( .م6 ) ⦙ اوامر التحميل والترجمة", b"m6")],
-        [Button.inline("( .م7 ) ⦙ اوامر المنع و القفل", b"m7"), Button.inline("( .م8 ) ⦙ اوامر التنظيف والتكرار", b"m8"), Button.inline("( .م9 ) ⦙ اوامر التخصيص والفارات", b"m9")],
-        [Button.inline("( .م10 ) ⦙ اوامر الوقتي و التشغيل", b"m10"), Button.inline("( .م11 ) ⦙ اوامر الكشف و الروابط", b"m11"), Button.inline("( .م12 ) ⦙ اوامر المساعدة والإذاعة", b"m12")],
-        [Button.inline("( .م13 ) ⦙ اوامر الارسال والاذكار", b"m13"), Button.inline("( .م14 ) ⦙ اوامر المـلصقات وكوكل", b"m14"), Button.inline("( .م15 ) ⦙ اوامر التسلية والميمز", b"m15")],
-        [Button.inline("( .م16 ) ⦙ اوامر الصيغ والجهات", b"m16"), Button.inline("( .م17 ) ⦙ اوامر التمبلر والزغرفة", b"m17"), Button.inline("( .م18 ) ⦙ اوامر الحساب والترفيه", b"m18")],
-        [Button.inline("( .م19 ) ⦙ اوامر اضافيه للسورس", b"m19"), Button.inline("( .م20 ) ⦙ اوامر بصمات الميمز", b"m20"), Button.inline("( .م21 ) ⦙ اوامر تجميع النقاط", b"m21")],
+        [Button.inline("التالي", data="jrzst"),
+         Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(MAIN_TEXT, buttons=buttons)
+    await event.edit(ROZADM, buttons=buttons)
 
 
-# الردود المخصصة لكل زر - تضيف محتواك داخل كل وحدة
-@l313l.tgbot.on(CallbackQuery(data=b"m1"))
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"jrzst")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م1 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="tslrzj"),
+         Button.inline("رجوع", data="l313l0")],
+    ]
+    await event.edit(GRTSTI, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m2"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"tslrzj")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م2 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="krrznd"),
+         Button.inline("رجوع", data="jrzst")],
+    ]
+    await event.edit(JMAN, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m3"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"krrznd")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م3 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="rozbot"),
+         Button.inline("رجوع", data="tslrzj")],
+    ]
+    await event.edit(TKPRZ, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m4"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"rozbot")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م4 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="Jmrz"),
+         Button.inline("رجوع", data="krrznd")],
+    ]
+    await event.edit(ROZBOT, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m5"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"Jmrz")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م5 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="r7brz"),
+         Button.inline("رجوع", data="rozbot")],
+    ]
+    await event.edit(JROZT, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m6"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"r7brz")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م6 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="sejrz"),
+         Button.inline("رجوع", data="Jmrz")],
+    ]
+    await event.edit(JMTRD, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m7"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"sejrz")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م7 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="gro"),
+         Button.inline("رجوع", data="r7brz")],
+    ]
+    await event.edit(ROZSEG, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m8"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"gro")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م8 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="grrz"),
+         Button.inline("رجوع", data="sejrz")],
+    ]
+    await event.edit(JMGR1, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m9"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"grrz")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م9 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="iiers"),
+         Button.inline("رجوع", data="gro")],
+    ]
+    await event.edit(ROZPRV, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m10"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"iiers")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م10 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="rfhrz"),
+         Button.inline("رجوع", data="grrz")],
+    ]
+    await event.edit(HERP, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m11"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"rfhrz")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م11 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("التالي", data="uscuxrz"),
+         Button.inline("رجوع", data="iiers")],
+    ]
+    await event.edit(T7SHIZ, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m12"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"uscuxrz")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م12 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    buttons = [
+        [Button.inline("رجوع", data="l313l0")],
+    ]
+    await event.edit(CLORN, buttons=buttons)
 
-@l313l.tgbot.on(CallbackQuery(data=b"m13"))
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"CLORN")))
 @check_owner
 async def _(event):
-    await event.edit("✳️ محتوى م13 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m14"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م14 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m15"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م15 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m16"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م16 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m17"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م17 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m18"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م18 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m19"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م19 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m20"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م20 هنا", buttons=[[Button.inline("رجوع", b"main")]])
-
-@l313l.tgbot.on(CallbackQuery(data=b"m21"))
-@check_owner
-async def _(event):
-    await event.edit("✳️ محتوى م21 هنا", buttons=[[Button.inline("رجوع", b"main")]])
+    # زر القائمة الرئيسية يعيدك للنص الأساسي مع زر التنقل
+    buttons = [
+        [Button.inline(" اوامر الادمن ", data="l313l0")],
+        [
+            Button.inline(" اوامر البوت ", data="rozbot"),
+            Button.inline(" الحساب ", data="Jmrz"),
+            Button.inline(" المجموعات ", data="gro"),
+        ],
+        [
+            Button.inline(" الصيغ و الجهات ", data="sejrz"),
+            Button.inline(" الحماية و تلكراف ", data="grrz"),
+        ],
+        [
+            Button.inline(" اوامر التسلية ", data="tslrzj"),
+            Button.inline(" الترحيبات والردود ", data="r7brz"),
+        ],
+        [
+            Button.inline(" اومر المساعدة ", data="krrznd"),
+            Button.inline(" الملصقات وصور ", data="jrzst"),
+        ],
+        [
+            Button.inline(" التكرار والتنظيف ", data="krrznd"),
+            Button.inline(" الترفيه ", data="rfhrz"),
+        ],
+        [
+            Button.inline(" التكرار والتنظيف ", data="iiers"),
+            Button.inline(" الملصقات وصور ", data="jrzst"),
+        ],
+        [
+            Button.inline(" الأكستـرا ", data="iiers"),
+            Button.inline(" الانتحال والتقليد ", data="uscuxrz"),
+        ],
+    ]
+    await event.edit(ROE, buttons=buttons)
