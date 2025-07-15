@@ -69,66 +69,45 @@ ROE = "**♰ هـذه هي قائمة اوامـر سـورس 𝐇𝐞𝐥𝐥�
 JEP_IC = ""  # ضع مسار صورة هنا إذا تريد
 
 if Config.TG_BOT_USERNAME is not None and tgbot is not None:
+  
+   @tgbot.on(events.InlineQuery)
+   async def inline_handler(event):
+    builder = event.builder
+    result = None
+    query = event.text
+    await bot.get_me()
+    if query.startswith("اوامر هيلاس") and event.query.user_id == bot.uid:
+        buttons = [
+    [Button.inline(" ( .م1 ) ⦙ اوامر الادمن ", data="l313l0")],  # زر واحد
+    [Button.inline(" ( .م2 ) ⦙ اوامر المجموعة ", data="rozbot"), Button.inline(" ( .م18 ) ⦙ اوامر الحساب والترفيه ", data="Jmrz")],
+    [Button.inline(" ( .م3 ) ⦙ اوامر الترحيب والردود ", data="gro"), Button.inline(" ( .م16 ) ⦙ اوامر الصيغ والجهات ", data="sejrz")],
+    [Button.inline(" ( .م4 ) ⦙ حماية خاص والتلكراف ", data="grrz"), Button.inline(" ( .م15 ) ⦙ اوامر التسلية والميمز ", data="tslrzj")],
+    [Button.inline(" ( .م12 ) ⦙ اوامر المساعدة والإذاعة ", data="r7brz"), Button.inline(" ( .م14 ) ⦙ اوامر المـلصقات وكوكل ", data="krrznd")],
+    [Button.inline(" ( .م8 ) ⦙ اوامر التنظيف والتكرار ", data="jrzst"), Button.inline(" ( .م10 ) ⦙ اوامر الوقتي و التشغيل ", data="krrznd")],
+    [Button.inline(" ( .م19 ) ⦙ اوامر اضافيه للسورس ", data="rfhrz"), Button.inline(" ( .م21 ) ⦙ اوامر تجميع النقاط وبوت وعد ", data="iiers")],
+    [Button.inline(" ( .م5 ) ⦙ اوامر المنشن والانتحال ", data="uscuxrz")],  # زر واحد
+]
 
-    @tgbot.on(events.InlineQuery)
-    async def inline_handler(event):
-        builder = event.builder
-        result = None
-        query = event.text
-        await bot.get_me()
-        if query.startswith("اوامر هيلاس") and event.query.user_id == bot.uid:
-            buttons = [
-                [Button.inline(" اوامر الادمن ", data="l313l0")],
-                [
-                    Button.inline(" اوامر البوت ", data="rozbot"),
-                    Button.inline(" الحساب ", data="Jmrz"),
-                    Button.inline(" المجموعات ", data="gro"),
-                ],
-                [
-                    Button.inline(" الصيغ و الجهات ", data="sejrz"),
-                    Button.inline(" الحماية و تلكراف ", data="grrz"),
-                ],
-                [
-                    Button.inline(" اوامر التسلية ", data="tslrzj"),
-                    Button.inline(" الترحيبات والردود ", data="r7brz"),
-                ],
-                [
-                    Button.inline(" اومر المساعدة ", data="krrznd"),
-                    Button.inline(" الملصقات وصور ", data="jrzst"),
-                ],
-                [
-                    Button.inline(" التكرار والتنظيف ", data="krrznd"),
-                    Button.inline(" الترفيه ", data="rfhrz"),
-                ],
-                [
-                    Button.inline(" التكرار والتنظيف ", data="iiers"),
-                    Button.inline(" الملصقات وصور ", data="jrzst"),
-                ],
-                [
-                    Button.inline(" الأكستـرا ", data="iiers"),
-                    Button.inline(" الانتحال والتقليد ", data="uscuxrz"),
-                ],
-            ]
-            if JEP_IC and JEP_IC.endswith((".jpg", ".png", "gif", "mp4")):
-                result = builder.photo(
-                    JEP_IC, text=ROE, buttons=buttons, link_preview=False
-                )
-            elif JEP_IC:
-                result = builder.document(
-                    JEP_IC,
-                    title="JoKeRUB",
-                    text=ROE,
-                    buttons=buttons,
-                    link_preview=False,
-                )
-            else:
-                result = builder.article(
-                    title="JoKeRUB",
-                    text=ROE,
-                    buttons=buttons,
-                    link_preview=False,
-                )
-            await event.answer([result] if result else None)
+        if JEP_IC and JEP_IC.endswith((".jpg", ".png", "gif", "mp4")):
+            result = builder.photo(
+                JEP_IC, text=ROE, buttons=buttons, link_preview=False
+            )
+        elif JEP_IC:
+            result = builder.document(
+                JEP_IC,
+                title="JoKeRUB",
+                text=ROE,
+                buttons=buttons,
+                link_preview=False,
+            )
+        else:
+            result = builder.article(
+                title="JoKeRUB",
+                text=ROE,
+                buttons=buttons,
+                link_preview=False,
+            )
+        await event.answer([result] if result else None)
 
 
 @bot.on(admin_cmd(outgoing=True, pattern="اوامر هيلاس"))
@@ -279,35 +258,14 @@ async def _(event):
 async def _(event):
     # زر القائمة الرئيسية يعيدك للنص الأساسي مع زر التنقل
     buttons = [
-        [Button.inline(" اوامر الادمن ", data="l313l0")],
-        [
-            Button.inline(" اوامر البوت ", data="rozbot"),
-            Button.inline(" الحساب ", data="Jmrz"),
-            Button.inline(" المجموعات ", data="gro"),
-        ],
-        [
-            Button.inline(" الصيغ و الجهات ", data="sejrz"),
-            Button.inline(" الحماية و تلكراف ", data="grrz"),
-        ],
-        [
-            Button.inline(" اوامر التسلية ", data="tslrzj"),
-            Button.inline(" الترحيبات والردود ", data="r7brz"),
-        ],
-        [
-            Button.inline(" اومر المساعدة ", data="krrznd"),
-            Button.inline(" الملصقات وصور ", data="jrzst"),
-        ],
-        [
-            Button.inline(" التكرار والتنظيف ", data="krrznd"),
-            Button.inline(" الترفيه ", data="rfhrz"),
-        ],
-        [
-            Button.inline(" التكرار والتنظيف ", data="iiers"),
-            Button.inline(" الملصقات وصور ", data="jrzst"),
-        ],
-        [
-            Button.inline(" الأكستـرا ", data="iiers"),
-            Button.inline(" الانتحال والتقليد ", data="uscuxrz"),
-        ],
-    ]
+    [Button.inline(" ( .م1 ) ⦙ اوامر الادمن ", data="l313l0")],  # زر واحد
+    [Button.inline(" ( .م2 ) ⦙ اوامر المجموعة ", data="rozbot"), Button.inline(" ( .م18 ) ⦙ اوامر الحساب والترفيه ", data="Jmrz")],
+    [Button.inline(" ( .م3 ) ⦙ اوامر الترحيب والردود ", data="gro"), Button.inline(" ( .م16 ) ⦙ اوامر الصيغ والجهات ", data="sejrz")],
+    [Button.inline(" ( .م4 ) ⦙ حماية خاص والتلكراف ", data="grrz"), Button.inline(" ( .م15 ) ⦙ اوامر التسلية والميمز ", data="tslrzj")],
+    [Button.inline(" ( .م12 ) ⦙ اوامر المساعدة والإذاعة ", data="r7brz"), Button.inline(" ( .م14 ) ⦙ اوامر المـلصقات وكوكل ", data="krrznd")],
+    [Button.inline(" ( .م8 ) ⦙ اوامر التنظيف والتكرار ", data="jrzst"), Button.inline(" ( .م10 ) ⦙ اوامر الوقتي و التشغيل ", data="krrznd")],
+    [Button.inline(" ( .م19 ) ⦙ اوامر اضافيه للسورس ", data="rfhrz"), Button.inline(" ( .م21 ) ⦙ اوامر تجميع النقاط وبوت وعد ", data="iiers")],
+    [Button.inline(" ( .م5 ) ⦙ اوامر المنشن والانتحال ", data="uscuxrz")],  # زر واحد
+]
+
     await event.edit(ROE, buttons=buttons)
