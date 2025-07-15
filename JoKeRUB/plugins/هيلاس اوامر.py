@@ -10,60 +10,32 @@ from ..core import check_owner
 from ..Config import Config
 
 # نصوص محتويات كل زر (يمكن تعديل النصوص حسب طلبك)
-ROZADM = """⦑ أوامر الأدمن ⦒
-.م1 - أمر 1
-.م2 - أمر 2
-..."""
-GRTSTI = """⦑ أوامر الملصقات وصور ⦒
-.ملصق - إرسال ملصق
-.صورة - إرسال صورة
-..."""
-JMAN = """⦑ أوامر التسلية ⦒
-.نكتة - إرسال نكتة
-.حالة - إرسال حالة
-..."""
-TKPRZ = """⦑ أوامر التنظيف والتكرار ⦒
-.تنظيف - تنظيف المحادثة
-.تكرار - تكرار رسالة
-..."""
-ROZBOT = """⦑ أوامر البوت ⦒
-.بوت - معلومات البوت
-.تشغيل - تشغيل الموسيقى
-..."""
-JROZT = """⦑ أوامر الحساب ⦒
-.حساب - معلومات الحساب
-.رصيد - عرض الرصيد
-..."""
-JMTRD = """⦑ الترحيبات والردود ⦒
-.ترحيب - تعيين ترحيب
-.ردود - عرض الردود
-..."""
-ROZSEG = """⦑ الصيغ والجهات ⦒
-.صيغ - تنسيق النصوص
-.جهات - إدارة جهات الاتصال
-..."""
-JMGR1 = """⦑ المجموعات ⦒
-.مجموعات - عرض المجموعات
-.انضمام - الانضمام لمجموعة
-..."""
-ROZPRV = """⦑ الحماية والتلكراف ⦒
-.قفل - قفل نوع معين
-.فتح - فتح نوع معين
-..."""
-HERP = """⦑ الترفيه ⦒
-.لعب - ألعاب ممتعة
-.مسابقات - مسابقات يومية
-..."""
-T7SHIZ = """⦑ الانتحال والتقليد ⦒
-.منشن - منشن خاص
-.تقليد - تقليد عضو
-..."""
-CLORN = """⦑ القائمة الرئيسية ⦒
-.م1 - اوامر الادمن
-.م2 - اوامر المجموعة
-.م3 - اوامر الترحيب والردود
-...
-"""
+
+###هيلاس 
+l313l0 = """** قائمة اوامر الادمن لسورس HELLAS  **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الحظر` )\n- ( `.اوامر الكتم` )\n- ( `.اوامر التثبيت` )\n- ( `.اوامر الاشراف` )\n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+
+rozbot  = """** قائمة اوامر المجـموعه لسورس HELLAS  **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر التفليش` )\n- ( `.اوامر المحذوفين` )\n- ( `.اوامر الكروب` )\n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+gro = """** قائمة اوامر الـترحيب والـردود **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الترحيب` )\n- ( `.اوامر الردود` )\n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+grrz = """** قائمة اوامر حـماية الخاص والتلكراف **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الحماية` )\n- ( `.اوامر التلكراف` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+r7brz = """ ** قائمة اوامر المساعدة  **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الوقت والتاريخ` )\n- ( `.اوامر كورونا` )\n- ( `.اوامر الصلاة` ) \n- ( `.اوامر مساعدة` )\n- ( `.اوامر الاذاعه` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+jrzst = """ ** قائمة اوامر التكرار والتنظيف **:\n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر التكرار` )\n- ( `.اوامر السبام` )\n- ( `.اوامر التنظيف` ) \n- ( `.اوامر المسح` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+rfhrz = """ **⦑ قائمة الأوامر الجديدة ⦒**\n"
+            "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
+            "⥾ `.اوامر البصمات`\n"
+            "⥾ `.اوامر النقل`\n"
+            "⥾ `.اوامر الرصيد`\n"
+	    "⥾ `.اوامر النشر`\n"
+            "⥾ `.اوامر التنزيل`\n"
+            "⥾ `.اوامر الذكاء`\n"
+            "★•┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉ ┉•★\n"
+            "⌔︙CH : @HELLASUserBot"""
+uscuxrz = """** قائمة اوامر الـمنشن والانتحال **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الانتحال` )\n- ( `.اوامر التقليد` )\n- ( `.اوامر المنشن` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot """
+Jmrz = """ ** قائمة اوامر الحساب و الترفيه **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الترفيه` )\n- ( `.اوامر الحساب` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+sejrz = """ ** قائمة اوامر تحويل الصيغ و الجهات **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر التحويل` )\n- ( `.اوامر الجهات` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+krrznd1 = """ ** قائمة اوامر الملصقات وكوكل **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الملصقات` )\n- ( `.اوامر كوكل` )\n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+krrznd = """ ** قائمة اوامر الوقتي والتشغيل **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر الاسم` )\n- ( `.اوامر البايو` )\n- ( `.اوامر الكروب الوقتي` )\n- ( `.اوامر التشغيل` ) \n- ( `.اوامر الاطفاء` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+tslrzj = """ ** قائمة اوامر التسلية والتحشيش **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر التسلية` )\n- ( `.اوامر التحشيش` )\n- ( `.اوامر الميمز` )\n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBot"""
+iiers = """ ** قائمة اوامر تجميع النقاط و بوت وعد **:\n ★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n ᯽︙ اختر احدى هذه القوائم\n\n- ( `.اوامر التجميع` ) \n- ( `.اوامر وعد` ) \n★•┉ ┉ ┉ ┉ ┉ ┉  ┉ ┉ ┉ ┉•★\n⌔︙CH : @HELLASUserBoT"""
 
 ROE = "**♰ هـذه هي قائمة اوامـر سـورس 𝐇𝐞𝐥𝐥𝐚𝐬  ♰**"
 JEP_IC = ""  # ضع مسار صورة هنا إذا تريد
@@ -78,14 +50,14 @@ if Config.TG_BOT_USERNAME is not None and tgbot is not None:
     await bot.get_me()
     if query.startswith("اوامر هيلاس") and event.query.user_id == bot.uid:
         buttons = [
-    [Button.inline(" ( .م1 ) ⦙ اوامر الادمن ", data="l313l0")],  # زر واحد
-    [Button.inline(" ( .م2 ) ⦙ اوامر المجموعة ", data="rozbot"), Button.inline(" ( .م18 ) ⦙ اوامر الحساب والترفيه ", data="Jmrz")],
-    [Button.inline(" ( .م3 ) ⦙ اوامر الترحيب والردود ", data="gro"), Button.inline(" ( .م16 ) ⦙ اوامر الصيغ والجهات ", data="sejrz")],
-    [Button.inline(" ( .م4 ) ⦙ حماية خاص والتلكراف ", data="grrz"), Button.inline(" ( .م15 ) ⦙ اوامر التسلية والميمز ", data="tslrzj")],
-    [Button.inline(" ( .م12 ) ⦙ اوامر المساعدة والإذاعة ", data="r7brz"), Button.inline(" ( .م14 ) ⦙ اوامر المـلصقات وكوكل ", data="krrznd")],
-    [Button.inline(" ( .م8 ) ⦙ اوامر التنظيف والتكرار ", data="jrzst"), Button.inline(" ( .م10 ) ⦙ اوامر الوقتي و التشغيل ", data="krrznd")],
-    [Button.inline(" ( .م19 ) ⦙ اوامر اضافيه للسورس ", data="rfhrz"), Button.inline(" ( .م21 ) ⦙ اوامر تجميع النقاط وبوت وعد ", data="iiers")],
-    [Button.inline(" ( .م5 ) ⦙ اوامر المنشن والانتحال ", data="uscuxrz")],  # زر واحد
+    [Button.inline("  اوامر الادمن ", data="l313l0")],  # زر واحد
+    [Button.inline("  اوامر المجموعة ", data="rozbot"), Button.inline("  اوامر الحساب والترفيه ", data="Jmrz")],
+    [Button.inline(" اوامر الترحيب والردود ", data="gro"), Button.inline(" اوامر الصيغ والجهات ", data="sejrz")],
+    [Button.inline("  حماية خاص والتلكراف ", data="grrz"), Button.inline("  اوامر التسلية والميمز ", data="tslrzj")],
+    [Button.inline("  اوامر المساعدة والإذاعة ", data="r7brz"), Button.inline("  اوامر المـلصقات وكوكل ", data="krrznd1")],
+    [Button.inline("  اوامر التنظيف والتكرار ", data="jrzst"), Button.inline("  اوامر الوقتي و التشغيل ", data="krrznd")],
+    [Button.inline("  اوامر اضافيه للسورس ", data="rfhrz"), Button.inline("  اوامر تجميع النقاط وبوت وعد ", data="iiers")],
+    [Button.inline(" اوامر المنشن والانتحال ", data="uscuxrz")],  # زر واحد
 ]
 
         if JEP_IC and JEP_IC.endswith((".jpg", ".png", "gif", "mp4")):
@@ -128,80 +100,20 @@ async def repo(event):
 @check_owner
 async def _(event):
     buttons = [
-        [Button.inline("التالي", data="jrzst"),
+        [Button.inline("التالي", data="rozbot"),
          Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(ROZADM, buttons=buttons)
-
-
-@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"jrzst")))
-@check_owner
-async def _(event):
-    buttons = [
-        [Button.inline("التالي", data="tslrzj"),
-         Button.inline("رجوع", data="l313l0")],
-    ]
-    await event.edit(GRTSTI, buttons=buttons)
-
-
-@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"tslrzj")))
-@check_owner
-async def _(event):
-    buttons = [
-        [Button.inline("التالي", data="krrznd"),
-         Button.inline("رجوع", data="jrzst")],
-    ]
-    await event.edit(JMAN, buttons=buttons)
-
-
-@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"krrznd")))
-@check_owner
-async def _(event):
-    buttons = [
-        [Button.inline("التالي", data="rozbot"),
-         Button.inline("رجوع", data="tslrzj")],
-    ]
-    await event.edit(TKPRZ, buttons=buttons)
+    await event.edit(l313l0, buttons=buttons)
 
 
 @l313l.tgbot.on(CallbackQuery(data=re.compile(rb"rozbot")))
 @check_owner
 async def _(event):
     buttons = [
-        [Button.inline("التالي", data="Jmrz"),
-         Button.inline("رجوع", data="krrznd")],
-    ]
-    await event.edit(ROZBOT, buttons=buttons)
-
-
-@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"Jmrz")))
-@check_owner
-async def _(event):
-    buttons = [
-        [Button.inline("التالي", data="r7brz"),
-         Button.inline("رجوع", data="rozbot")],
-    ]
-    await event.edit(JROZT, buttons=buttons)
-
-
-@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"r7brz")))
-@check_owner
-async def _(event):
-    buttons = [
-        [Button.inline("التالي", data="sejrz"),
-         Button.inline("رجوع", data="Jmrz")],
-    ]
-    await event.edit(JMTRD, buttons=buttons)
-
-
-@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"sejrz")))
-@check_owner
-async def _(event):
-    buttons = [
         [Button.inline("التالي", data="gro"),
-         Button.inline("رجوع", data="r7brz")],
+         Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(ROZSEG, buttons=buttons)
+    await event.edit(rozbot, buttons=buttons)
 
 
 @l313l.tgbot.on(CallbackQuery(data=re.compile(rb"gro")))
@@ -209,29 +121,39 @@ async def _(event):
 async def _(event):
     buttons = [
         [Button.inline("التالي", data="grrz"),
-         Button.inline("رجوع", data="sejrz")],
+         Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(JMGR1, buttons=buttons)
+    await event.edit(gro, buttons=buttons)
 
 
 @l313l.tgbot.on(CallbackQuery(data=re.compile(rb"grrz")))
 @check_owner
 async def _(event):
     buttons = [
-        [Button.inline("التالي", data="iiers"),
-         Button.inline("رجوع", data="gro")],
+        [Button.inline("التالي", data="r7brz"),
+         Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(ROZPRV, buttons=buttons)
+    await event.edit(grrz, buttons=buttons)
 
 
-@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"iiers")))
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"r7brz")))
+@check_owner
+async def _(event):
+    buttons = [
+        [Button.inline("التالي", data="jrzst"),
+          Button.inline("القائمة الرئيسية", data="CLORN")],
+    ]
+    await event.edit(r7brz, buttons=buttons)
+
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"jrzst")))
 @check_owner
 async def _(event):
     buttons = [
         [Button.inline("التالي", data="rfhrz"),
-         Button.inline("رجوع", data="grrz")],
+         Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(HERP, buttons=buttons)
+    await event.edit(jrzst, buttons=buttons)
 
 
 @l313l.tgbot.on(CallbackQuery(data=re.compile(rb"rfhrz")))
@@ -239,18 +161,68 @@ async def _(event):
 async def _(event):
     buttons = [
         [Button.inline("التالي", data="uscuxrz"),
-         Button.inline("رجوع", data="iiers")],
+         Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(T7SHIZ, buttons=buttons)
+    await event.edit(rfhrz, buttons=buttons)
 
 
 @l313l.tgbot.on(CallbackQuery(data=re.compile(rb"uscuxrz")))
 @check_owner
 async def _(event):
     buttons = [
-        [Button.inline("رجوع", data="l313l0")],
+        [Button.inline("التالي", data="Jmrz"),
+         Button.inline("القائمة الرئيسية", data="CLORN")],
     ]
-    await event.edit(CLORN, buttons=buttons)
+    await event.edit(uscuxrz, buttons=buttons)
+
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"Jmrz")))
+@check_owner
+async def _(event):
+    buttons = [
+        [Button.inline("التالي", data="sejrz"),
+         Button.inline("القائمة الرئيسية", data="CLORN")],
+    ]
+    await event.edit(Jmrz, buttons=buttons)
+
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"sejrz")))
+@check_owner
+async def _(event):
+    buttons = [
+        [Button.inline("التالي", data="tslrzj"),
+         Button.inline("القائمة الرئيسية", data="CLORN")],
+    ]
+    await event.edit(sejrz, buttons=buttons)
+
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"tslrzj")))
+@check_owner
+async def _(event):
+    buttons = [
+        [Button.inline("التالي", data="krrznd1"),
+         Button.inline("القائمة الرئيسية", data="CLORN")],
+    ]
+    await event.edit(tslrzj, buttons=buttons)
+
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"krrznd1")))
+@check_owner
+async def _(event):
+    buttons = [
+        [Button.inline("التالي", data="krrznd"),
+         Button.inline("القائمة الرئيسية", data="CLORN")],
+    ]
+    await event.edit(krrznd1, buttons=buttons)
+
+
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"iiers")))
+@check_owner
+async def _(event):
+    buttons = [
+        [Button.inline("القائمة الرئيسية", data="CLORN")],
+    ]
+    await event.edit(iiers, buttons=buttons)
 
 
 @l313l.tgbot.on(CallbackQuery(data=re.compile(rb"CLORN")))
@@ -258,14 +230,13 @@ async def _(event):
 async def _(event):
     # زر القائمة الرئيسية يعيدك للنص الأساسي مع زر التنقل
     buttons = [
-    [Button.inline(" ( .م1 ) ⦙ اوامر الادمن ", data="l313l0")],  # زر واحد
-    [Button.inline(" ( .م2 ) ⦙ اوامر المجموعة ", data="rozbot"), Button.inline(" ( .م18 ) ⦙ اوامر الحساب والترفيه ", data="Jmrz")],
-    [Button.inline(" ( .م3 ) ⦙ اوامر الترحيب والردود ", data="gro"), Button.inline(" ( .م16 ) ⦙ اوامر الصيغ والجهات ", data="sejrz")],
-    [Button.inline(" ( .م4 ) ⦙ حماية خاص والتلكراف ", data="grrz"), Button.inline(" ( .م15 ) ⦙ اوامر التسلية والميمز ", data="tslrzj")],
-    [Button.inline(" ( .م12 ) ⦙ اوامر المساعدة والإذاعة ", data="r7brz"), Button.inline(" ( .م14 ) ⦙ اوامر المـلصقات وكوكل ", data="krrznd")],
-    [Button.inline(" ( .م8 ) ⦙ اوامر التنظيف والتكرار ", data="jrzst"), Button.inline(" ( .م10 ) ⦙ اوامر الوقتي و التشغيل ", data="krrznd")],
-    [Button.inline(" ( .م19 ) ⦙ اوامر اضافيه للسورس ", data="rfhrz"), Button.inline(" ( .م21 ) ⦙ اوامر تجميع النقاط وبوت وعد ", data="iiers")],
-    [Button.inline(" ( .م5 ) ⦙ اوامر المنشن والانتحال ", data="uscuxrz")],  # زر واحد
+    [Button.inline(" اوامر الادمن ", data="l313l0")],  # زر واحد
+    [Button.inline(" اوامر المجموعة ", data="rozbot"), Button.inline("  اوامر الحساب والترفيه ", data="Jmrz")],
+    [Button.inline("اوامر الترحيب والردود ", data="gro"), Button.inline("  اوامر الصيغ والجهات ", data="sejrz")],
+    [Button.inline(" حماية خاص والتلكراف ", data="grrz"), Button.inline("  اوامر التسلية والميمز ", data="tslrzj")],
+    [Button.inline(" اوامر المساعدة والإذاعة ", data="r7brz"), Button.inline("  اوامر المـلصقات وكوكل ", data="krrznd1")],
+    [Button.inline(" اوامر التنظيف والتكرار ", data="jrzst"), Button.inline("  اوامر الوقتي و التشغيل ", data="krrznd")],
+    [Button.inline("  اوامر اضافيه للسورس ", data="rfhrz"), Button.inline(" اوامر تجميع النقاط وبوت وعد ", data="iiers")],
+    [Button.inline("  اوامر المنشن والانتحال ", data="uscuxrz")], 
 ]
-
     await event.edit(ROE, buttons=buttons)
