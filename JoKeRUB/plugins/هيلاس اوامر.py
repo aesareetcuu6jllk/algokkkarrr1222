@@ -76,7 +76,7 @@ if Config.TG_BOT_USERNAME is not None and tgbot is not None:
         result = None
         query = event.text
         await bot.get_me()
-        if query.startswith("اوامري") and event.query.user_id == bot.uid:
+        if query.startswith("اوامر هيلاس") and event.query.user_id == bot.uid:
             buttons = [
                 [Button.inline(" اوامر الادمن ", data="l313l0")],
                 [
@@ -138,7 +138,7 @@ async def repo(event):
     F_O_1 = Config.TG_BOT_USERNAME
     if event.reply_to_msg_id:
         await event.get_reply_message()
-    response = await bot.inline_query(F_O_1, "اوامري")
+    response = await bot.inline_query(F_O_1, "اوامر هيلاس")
     await response[0].click(event.chat_id)
     await event.delete()
 
