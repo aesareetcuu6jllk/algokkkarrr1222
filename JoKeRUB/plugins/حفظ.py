@@ -10,20 +10,19 @@ async def save_from_link(event):
 
     try:
         if "/c/" in link:
-            # قناة خاصة (https://t.me/c/123456789/123)
+            # قناة خاصة
             parts = link.split("/")
             chat_id = int("-100" + parts[-2])
             msg_id = int(parts[-1].split("?")[0])
         else:
-            # قناة عامة (https://t.me/username/123)
+            # قناة عامة
             parts = link.split("/")
             username = parts[-2]
             msg_id = int(parts[-1].split("?")[0])
             entity = await l313l.get_entity(username)
             chat_id = entity.id
 
-        # جلب الرسالة
-        msg = (await l313l(GetMessagesRequest(peer=chat_id, id=[msg_id]))).messages[0]
+        msg = (await l313l(GetMessagesRequest(chat_id, [msg_id]))).messages[0]
 
         sent_msg = await event.reply("📥 جاري تحميل المنشور ...")
 
@@ -48,4 +47,4 @@ async def save_from_link(event):
         await sent_msg.delete()
 
     except Exception as e:
-        await event.reply(f"❌ خطأ أثناء الحفظ: `{e}`")
+        await event.reply(f"❌ خطأ أثناء الحفظ:\n`{e}`")
