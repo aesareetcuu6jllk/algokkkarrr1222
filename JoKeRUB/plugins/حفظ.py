@@ -1,64 +1,51 @@
-
-
-import asyncio
+from JoKeRUB import l313l
+from telethon import events
+from telethon.tl.functions.messages import GetMessagesRequest
+from telethon.tl.types import DocumentAttributeVideo
 import os
 
-from telethon import events
-from telethon.errors.rpcerrorlist import YouBlockedUserError
+@l313l.on(events.NewMessage(pattern=r'^\.((?:حفظ|احفظ)) (https?://[^\s]+)$', outgoing=True))
+async def save_from_link(event):
+    link = event.pattern_match.group(2)
 
-from JoKeRUB import l313l
-
-from ..core.managers import edit_delete, edit_or_reply
-from ..helpers.utils import reply_id
-from . import BOTLOG, BOTLOG_CHATID
-
-plugin_category = "البحث"
-
-
-@l313l.ar_cmd(
-    pattern="حفظ(?:\s|$)([\s\S]*)",
-    command=("حفظ", plugin_category),
-    info={
-        "header": "لتحميل منشور مقييد ",
-        "الاستـخـدام": "{tr}حفظ بالـرد ع رابـط",
-    },
-)
-async def _(event):
-    if event.fwd_from:
-        return
-    reply_message = await event.get_reply_message()
-    if not reply_message:
-        await edit_or_reply(event, "**```بالـرد على الرابـط حمبـي 🧸🎈```**")
-        return
-    if not reply_message.text:
-        await edit_or_reply(event, "**```بالـرد على الرابـط حمبـي 🧸🎈```**")
-        return
-    chat = "@ZIKOD12bot"
-    zzzzl1l = await edit_or_reply(event, "**╮  تم تحميل ملفك بنجاح اهنا حبيبي ب بوت : @ZIKOD12bot  ╰**")
-    async with event.client.conversation(chat) as conv:
-        try:
-            response = conv.wait_event(
-                events.NewMessage(incoming=True, from_users=6748718626)
-            )
-            await event.client.forward_messages(chat, reply_message)
-            response = await response
-            await event.client.send_read_acknowledge(conv.chat_id)
-        except YouBlockedUserError:
-            await zzzzl1l.edit(
-                "**❈╎تحـقق من انـك لم تقـم بحظـر البوت  .. ثم اعـد استخدام الامـر ...🤖♥️**"
-            )
-            return
-        if response.text.startswith(""):
-            await zzzzl1l.edit("**🤨💔...؟**")
+    try:
+        if "/c/" in link:
+            # قناة خاصة (https://t.me/c/123456789/123)
+            parts = link.split("/")
+            chat_id = int("-100" + parts[-2])
+            msg_id = int(parts[-1].split("?")[0])
         else:
-            await zzzzl1l.delete()
-            await event.client.send_message(event.chat_id, response.message)
+            # قناة عامة (https://t.me/username/123)
+            parts = link.split("/")
+            username = parts[-2]
+            msg_id = int(parts[-1].split("?")[0])
+            entity = await l313l.get_entity(username)
+            chat_id = entity.id
 
+        # جلب الرسالة
+        msg = (await l313l(GetMessagesRequest(peer=chat_id, id=[msg_id]))).messages[0]
 
-CMD_HELP.update(
-    {
-        "محتوا مقييد": "**اسم الاضافـه : **محتوا مقييد`\
-    \n\n**╮•❐ الامـر ⦂ **`.حفظ` بالرد على الرابط\
-    \n**الشـرح •• **تحميل المنشورات المقيدة "
-    }
-)
+        sent_msg = await event.reply("📥 جاري تحميل المنشور ...")
+
+        if msg.media:
+            file_path = await l313l.download_media(msg, file_name="temp")
+            kwargs = {
+                "file": file_path,
+                "caption": msg.text or "",
+                "reply_to": event.id
+            }
+
+            if hasattr(msg.media, "document") and msg.media.document:
+                for attr in msg.media.document.attributes:
+                    if isinstance(attr, DocumentAttributeVideo):
+                        kwargs["supports_streaming"] = True
+
+            await l313l.send_file(event.chat_id, **kwargs)
+            os.remove(file_path)
+        elif msg.text:
+            await event.reply(msg.text)
+
+        await sent_msg.delete()
+
+    except Exception as e:
+        await event.reply(f"❌ خطأ أثناء الحفظ: `{e}`")
