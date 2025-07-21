@@ -1,6 +1,6 @@
-import requests
+import cloudscraper
 from telethon import events
-from JoKeRUB import l313l  # سكربتك
+from JoKeRUB import l313l
 
 @l313l.on(events.NewMessage(pattern=r'^\.يوزر(?:\s+@?(\w+))?$'))
 async def frag_checker(event):
@@ -10,23 +10,19 @@ async def frag_checker(event):
         return
 
     url = f"https://fragment.com/username/{username}"
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
+    scraper = cloudscraper.create_scraper()
 
     try:
-        r = requests.get(url, headers=headers)
+        response = scraper.get(url)
+        html = response.text.lower()
 
-        if r.status_code == 404:
+        if response.status_code == 404:
             await event.reply(f"🟨 `{username}` غير موجود في Fragment\n↪️ **ملكية أو مستخدم عادي**")
-            return
-
-        if "Buy" in r.text or "price" in r.text:
+        elif "buy" in html or "price" in html:
             await event.reply(f"✅ `{username}` متاح للبيع\n↪️ **منصة (أخضر)**")
-        elif "Sold" in r.text or "was sold" in r.text:
+        elif "sold" in html or "was sold" in html:
             await event.reply(f"🟥 `{username}` تم بيعه\n↪️ **منصة (أحمر)**")
         else:
             await event.reply(f"⚠️ `{username}` موجود لكن الحالة غير معروفة.")
     except Exception as e:
-        await event.reply(f"❌ خطأ أثناء الاتصال بـ Fragment:\n`{e}`")
-
+        await event.reply(f"❌ خطأ أثناء الاتصال:\n`{e}`")
