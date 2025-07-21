@@ -1,14 +1,15 @@
 from telethon import events
-from JoKeRUB import l313l  # تأكد أن l313l هو client الصحيح
+from telethon.tl import functions  # ← هذا هو السطر المهم لحل الخطأ
+from JoKeRUB import l313l
 import requests
 import re
 
-@l313l.on(events.NewMessage(pattern=r"\.كروب", outgoing=True))
+@l313l.on(events.NewMessage(pattern=r"\.الانشاء", outgoing=True))
 async def creation_handler(event):
     try:
         if event.is_reply:
             reply_msg = await event.get_reply_message()
-            # استخراج الرابط من الرسالة التي تم الرد عليها
+            # استخراج رابط كروب من الرسالة
             match = re.search(r"(https?://t\.me/(joinchat/\S+|\+\S+))", reply_msg.text)
             if not match:
                 await event.reply("❌ لم يتم العثور على رابط كروب في الرسالة.")
@@ -16,8 +17,9 @@ async def creation_handler(event):
 
             group_link = match.group(1)
 
-            # محاولة الانضمام المؤقت للكروب والحصول على ID
-            joined = await l313l(functions.messages.ImportChatInviteRequest(group_link.split('/')[-1].replace('+', '')))
+            # محاولة الانضمام المؤقت للحصول على معلومات الكروب
+            invite_hash = group_link.split('/')[-1].replace('+', '')
+            joined = await l313l(functions.messages.ImportChatInviteRequest(invite_hash))
             chat = joined.chats[0] if joined.chats else None
 
             if not chat:
@@ -27,11 +29,10 @@ async def creation_handler(event):
             group_id = chat.id
 
         else:
-            # إذا لم تكن هناك رسالة فيها رابط
             await event.reply("❌ يجب الرد على رسالة تحتوي على رابط كروب.")
             return
 
-        # طلب معلومات الإنشاء من API خارجي
+        # إرسال الطلب إلى API
         url = f"http://145.223.80.56:5016/date?id={group_id}"
         response = requests.get(url)
 
