@@ -4,7 +4,7 @@ from JoKeRUB import l313l
 import requests
 import re
 
-@l313l.on(events.NewMessage(pattern=r"\.الانشاء", outgoing=True))
+@l313l.on(events.NewMessage(pattern=r"\.كروب", outgoing=True))
 async def creation_handler(event):
     try:
         if event.is_reply:
