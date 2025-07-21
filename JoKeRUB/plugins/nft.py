@@ -7,25 +7,29 @@ async def check_fragment_user(event):
     username = event.pattern_match.group(1)
     url = f"https://fragment.com/{username}"
 
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+    }
+
     try:
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(url) as response:
                 status_code = response.status
                 html = await response.text()
 
         if status_code == 200:
-            if "tgme_username_link" in html or "/cdn-cgi/l/email-protection" in html:
-                msg = f"✅ اليوزر [@{username}](https://t.me/{username}) **موجود على المنصة.**"
-            elif "auction ends" in html.lower():
-                msg = f"🔶 اليوزر [@{username}] **في مزاد على Fragment.**"
-            elif "sold" in html.lower():
-                msg = f"❌ اليوزر [@{username}] **تم بيعه سابقاً على Fragment.**"
+            if "Buy" in html or "buy" in html:
+                msg = f"✅ اليوزر [@{username}](https://t.me/{username}) **معروض للبيع على Fragment.**"
+            elif "Auction ends" in html or "auction" in html:
+                msg = f"🔶 اليوزر [@{username}](https://t.me/{username}) **في مزاد حالياً على Fragment.**"
+            elif "Sold" in html or "sold" in html:
+                msg = f"❌ اليوزر [@{username}](https://t.me/{username}) **تم بيعه على Fragment.**"
             else:
-                msg = f"✅ اليوزر [@{username}] **صفحة موجودة لكن حالته غير واضحة (احتمال معروض).**"
+                msg = f"✅ اليوزر [@{username}] **الصفحة موجودة ولكن حالته غير واضحة.**"
         elif status_code == 404:
             msg = f"❌ اليوزر [@{username}] غير موجود على منصة Fragment."
         else:
-            msg = f"⚠️ حالة غير معروفة (status code: {status_code})"
+            msg = f"⚠️ لا يمكن تحديد الحالة (كود: {status_code})"
 
         await event.reply(msg, link_preview=False)
 
@@ -34,5 +38,5 @@ async def check_fragment_user(event):
 
 @l313l.on(events.NewMessage(outgoing=True, pattern=r"\.يوزر$"))
 async def empty_user(event):
-    await event.reply("❌ يرجى كتابة اليوزر بعد الأمر.\nمثال: `.يوزر @joker`")
+    await event.reply("❌ الرجاء كتابة اليوزر بعد الأمر.\nمثال: `.يوزر @username`")
 
