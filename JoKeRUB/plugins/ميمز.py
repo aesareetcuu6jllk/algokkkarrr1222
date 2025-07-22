@@ -15,10 +15,10 @@ from JoKeRUB import l313l
 from ..helpers.utils import reply_id
 plugin_category = "tools"
 # الي يخمط ويكول من كتابتي الا امه انيجه وقد اعذر من انذر
-@l313l.on(admin_cmd(outgoing=True, pattern="زيج$"))
+@l313l.on(admin_cmd(outgoing=True, pattern="انزع$"))
 async def jepmeme(memejep):
   Jep = await reply_id(memejep)
-  url = f"https://t.me/SEFHELLAS/312"
+  url = f"https://t.me/kkmgee/54"
   await memejep.client.send_file(memejep.chat_id,url,caption="",parse_mode="html",reply_to=Jep)
   await memejep.delete()
 
