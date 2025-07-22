@@ -180,6 +180,41 @@ t10 = """• اوامـر الصيـد والتثبيت هيلاس سورس • 
     "- تأكد من مساحه القنوات حتا اذا مقبطه وصاد يوزر وين يخليه اذا انت مخليه كله قنوات ف فرغ قنوات وتأكد اكو مساحه.\n"
     "- لاتوقف الصيد حتا لو طول تمام!!.\n"
     "- الصبر جميل ويا سورس 𝐇𝐞𝐥𝐥𝐚𝐬 : @HELLASUserBot.\n"""
+
+t11 = """🎭 هاذي هيه بصمات ميمز سورس هيلاس:
+
+`هاروني`
+`همبركر`
+`لا شماته`
+`تفضل`
+`اشكرج طبعا`
+`ماردنا الطلايب`
+`موال سلام`
+`اف مبروك`
+`الاكننا الافضل`
+`اطلع بره`
+`بليز ترامب`
+`واجب`
+`حيدر كيمز`
+`شماته`
+`يلا دي`
+`وين كلاوات`
+`لكيتني`
+`يعني يعني`
+`يبو فاضل`
+`جلاب`
+`حسناء`
+`انت اسكت`
+`اسكت ياخي`
+`ارسلني حمزه`
+`عفطه`
+`حيل ضايج`
+`شجاي تلغي`
+`كافي جلبت`
+`هاي شبيك`
+`انا اسفف`
+"""
+
 ROE = "**♰ هـذه هي قائمة اوامـر سـورس 𝐇𝐞𝐥𝐥𝐚𝐬  ♰**"
 JEP_IC = ""  # ضع مسار صورة هنا إذا تريد
 
@@ -204,6 +239,7 @@ if Config.TG_BOT_USERNAME is not None and tgbot is not None:
             [Button.inline("👤 معلومات حسابي", data="t3"), Button.inline("🪙 تجميع النقاط", data="t4")],
             [Button.inline("🖼️ الصور الذاتية", data="t7")],
             [Button.inline("📣 النشر التلقائي", data="t8")],
+	    [Button.inline("بصمات الميمز", data="t11")],
             [Button.inline("🔁 تحويل الصيغ", data="t5"), Button.inline("😂 اوامر التحشيش", data="t6")],
             [Button.inline("🎯 صيد يوزرات", data="t9"), Button.inline("📌 تثبيت يوزرات", data="t10")],
             [Button.inline("🧩 اوامر إضافية للسورس", data="rfhrz"), Button.inline("🤖 تجميع النقاط + بوت وعد", data="iiers")],
@@ -386,6 +422,14 @@ async def _(event):
     ]
     await event.edit(t1, buttons=buttons)
 
+@l313l.tgbot.on(CallbackQuery(data=re.compile(rb"t11")))
+@check_owner
+async def _(event):
+    buttons = [
+        [Button.inline("القائمة الرئيسية", data="CLORN")],
+    ]
+    await event.edit(t11, buttons=buttons)
+	
 @l313l.tgbot.on(CallbackQuery(data=re.compile(rb"t2")))
 @check_owner
 async def _(event):
@@ -476,6 +520,7 @@ async def _(event):
             [Button.inline("👤 معلومات حسابي", data="t3"), Button.inline("🪙 تجميع النقاط", data="t4")],
             [Button.inline("🖼️ الصور الذاتية", data="t7")],
             [Button.inline("📣 النشر التلقائي", data="t8")],
+	    [Button.inline("بصمات الميمز", data="t11")],
             [Button.inline("🔁 تحويل الصيغ", data="t5"), Button.inline("😂 اوامر التحشيش", data="t6")],
             [Button.inline("🎯 صيد يوزرات", data="t9"), Button.inline("📌 تثبيت يوزرات", data="t10")],
             [Button.inline("🧩 اوامر إضافية للسورس", data="rfhrz"), Button.inline("🤖 تجميع النقاط + بوت وعد", data="iiers")],
