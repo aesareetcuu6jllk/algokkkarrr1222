@@ -1,23 +1,27 @@
+from JoKeRUB import l313l
 import requests
-from JoKeRUB import l313l  # حسب طلبك فقط استيراد
 
-def get_instagram_info(text):
-    if not text.startswith('.حساب انستا '):
-        return None  # مش أمر انستا، تتجاهل
+@l313l.on_message  # أو حسب طريقة تعريف الأمر في مكتبتك
+def insta_command(message):
+    text = message.text
+    if not text.startswith('.معلومات انستا '):
+        return
     
-    username = text[len('.حساب انستا '):].strip()
+    username = text[len('.معلومات انستا '):].strip()
     if not username:
-        return "يرجى كتابة اسم المستخدم بعد الأمر."
-    
+        l313l.send_message(message.chat.id, "يرجى كتابة اسم المستخدم بعد الأمر.")
+        return
+
     try:
         url = f"http://145.223.80.56:5091/instagram_info?username={username}"
         response = requests.get(url, timeout=10)
         data = response.json()
         
         if 'error' in data:
-            return f"خطأ: {data['error']}"
+            l313l.send_message(message.chat.id, f"خطأ: {data['error']}")
+            return
         
-        result = (
+        msg = (
             f"معلومات حساب انستا:\n"
             f"الاسم: {data.get('name', 'غير متوفر')}\n"
             f"المتابعين: {data.get('followers', 'غير متوفر')}\n"
@@ -26,6 +30,6 @@ def get_instagram_info(text):
             f"الوصف: {data.get('bio', 'غير متوفر')}\n"
             f"https://instagram.com/{username}"
         )
-        return result
+        l313l.send_message(message.chat.id, msg)
     except Exception as e:
-        return f"حدث خطأ أثناء جلب البيانات: {e}"
+        l313l.send_message(message.chat.id, f"حدث خطأ أثناء جلب البيانات: {e}")
