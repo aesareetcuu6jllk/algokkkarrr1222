@@ -5,23 +5,23 @@ import requests
 INSTAGRAM_INFO_TEMPLATE = """
 ✨ معلومات حساب إنستا:
 
-👤 الاسم: {name}
-👥 المتابعون: {followers}
-👣 المتابعون: {following}
-📝 عدد المنشورات: {posts}
+👤 الاسم: {full_name}
+👥 المتابعون: {follower_count}
+👣 المتابعون: {following_count}
+📝 عدد المنشورات: {media_count}
 📖 الوصف: {bio}
 
 🔗 رابط الحساب: https://instagram.com/{username}
 """
 
-def format_instagram_info(data, username):
+def format_instagram_info(data):
     return INSTAGRAM_INFO_TEMPLATE.format(
-        name=data.get('name', 'غير متوفر'),
-        followers=data.get('followers', 'غير متوفر'),
-        following=data.get('following', 'غير متوفر'),
-        posts=data.get('posts', 'غير متوفر'),
+        full_name=data.get('full_name', 'غير متوفر'),
+        follower_count=data.get('follower_count', 'غير متوفر'),
+        following_count=data.get('following_count', 'غير متوفر'),
+        media_count=data.get('media_count', 'غير متوفر'),
         bio=data.get('bio', 'غير متوفر'),
-        username=username
+        username=data.get('username', 'غير متوفر')
     )
 
 @l313l.on(events.NewMessage(pattern=r'^\.انستا معلومات\s+(\S+)$', outgoing=True))
@@ -36,7 +36,7 @@ async def insta_info_handler(event):
         data = res.json()
 
         if data:
-            msg = format_instagram_info(data, username)
+            msg = format_instagram_info(data)
             await wait.edit(msg)
         else:
             await wait.edit("❌ لم أستطع جلب معلومات الحساب.")
