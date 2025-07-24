@@ -1,50 +1,31 @@
-from JoKeRUB import l313l
 import requests
-import random
+from JoKeRUB import l313l  # حسب طلبك فقط استيراد
 
-@l313l.on(events.NewMessage(pattern=r'^\.حساب انستا (.+)$', outgoing=True))
-async def insta_info(event):
-    username = event.pattern_match.group(1).strip()
-
-    headers = {
-        'user-agent': random.choice([
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
-        ]),
-        'x-ig-app-id': '936619743392459'
-    }
-    url = f"https://www.instagram.com/api/v1/users/web_profile_info/?username={username}"
+def get_instagram_info(text):
+    if not text.startswith('.حساب انستا '):
+        return None  # مش أمر انستا، تتجاهل
+    
+    username = text[len('.حساب انستا '):].strip()
+    if not username:
+        return "يرجى كتابة اسم المستخدم بعد الأمر."
     
     try:
-        r = requests.get(url, headers=headers)
-        data = r.json()
-        if r.status_code != 200 or 'user' not in data.get('data', {}):
-            return await event.edit(f"❌ الحساب غير موجود: {username}")
+        url = f"http://145.223.80.56:5091/instagram_info?username={username}"
+        response = requests.get(url, timeout=10)
+        data = response.json()
         
-        user_data = data['data']['user']
-        name = user_data.get('full_name', 'N/A')
-        bio = user_data.get('biography', 'لا يوجد')
-        followers = user_data.get('edge_followed_by', {}).get('count', 0)
-        following = user_data.get('edge_follow', {}).get('count', 0)
-        verified = "نعم" if user_data.get('is_verified') else "لا"
-        private = "نعم" if user_data.get('is_private') else "لا"
-        posts = user_data.get('edge_owner_to_timeline_media', {}).get('count', 0)
-        pfp = user_data.get('profile_pic_url_hd', '')
-
-        text = f"""
-📸 معلومات إنستا: @{username}
-
-• الاسم: {name}
-• المتابعين: {followers}
-• يتابع: {following}
-• المنشورات: {posts}
-• خاص؟ {private}
-• موثق؟ {verified}
-• البايو: {bio}
-"""
-        if pfp:
-            await event.client.send_file(event.chat_id, pfp, caption=text)
-        else:
-            await event.edit(text)
+        if 'error' in data:
+            return f"خطأ: {data['error']}"
+        
+        result = (
+            f"معلومات حساب انستا:\n"
+            f"الاسم: {data.get('name', 'غير متوفر')}\n"
+            f"المتابعين: {data.get('followers', 'غير متوفر')}\n"
+            f"المتابَعون: {data.get('following', 'غير متوفر')}\n"
+            f"عدد المنشورات: {data.get('posts', 'غير متوفر')}\n"
+            f"الوصف: {data.get('bio', 'غير متوفر')}\n"
+            f"https://instagram.com/{username}"
+        )
+        return result
     except Exception as e:
-        await event.edit(f"حدث خطأ: {str(e)}")
+        return f"حدث خطأ أثناء جلب البيانات: {e}"
