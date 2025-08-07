@@ -29,13 +29,13 @@ async def group_reply_handler(event):
     msg_text = event.raw_text.lower().strip()
 
     # أوامر تفعيل وتعطيل (تُنفذ فقط إذا الشخص كاتبها مباشرة بدون رد)
-    if msg_text == "تفعيل الضيف" and not event.is_reply:
+    if msg_text == "تفعيل الضيف." and not event.is_reply:
         if (await event.get_sender()).is_self:
             guest_mode_enabled = True
             await event.reply("✅ تم تفعيل أوامر الضيف.")
         return
 
-    if msg_text == "تعطيل الضيف" and not event.is_reply:
+    if msg_text == "تعطيل الضيف." and not event.is_reply:
         if (await event.get_sender()).is_self:
             guest_mode_enabled = False
             await event.reply("❌ تم تعطيل أوامر الضيف.")
