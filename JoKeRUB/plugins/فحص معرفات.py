@@ -1,12 +1,17 @@
 from telethon import events
-from telethon.tl.functions.messages import ImportChatInviteRequest, SendMessageRequest
+from telethon.tl.functions.messages import ImportChatInviteRequest
 from JoKeRUB import l313l
 
 CHECK_GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
 
+# لتخزين الرسائل التي بانتظار رد عليها
+pending_checks = {}
+
 @l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
 async def sandal_cmd(event: events.NewMessage.Event):
     input_text = event.pattern_match.group(1)
+
+    # إذا ما فيه نص، حاول تأخذ من الرد
     if not input_text:
         reply = await event.get_reply_message()
         if reply and reply.sender:
@@ -17,7 +22,7 @@ async def sandal_cmd(event: events.NewMessage.Event):
         else:
             return await event.reply("❌ يرجى كتابة المعرف أو الرد على رسالة.")
 
-    # الانضمام للمجموعة
+    # الانضمام للقروب إذا فيه رابط دعوة
     try:
         if "+" in CHECK_GROUP_LINK:
             hash_part = CHECK_GROUP_LINK.split("+")[1]
@@ -25,18 +30,22 @@ async def sandal_cmd(event: events.NewMessage.Event):
     except Exception:
         pass
 
-    # إرسال أمر الفحص واحفظ الرسالة
+    # إرسال رسالة الفحص
     try:
         sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"فحص {input_text}")
     except Exception as e:
         return await event.reply(f"❌ فشل إرسال الفحص داخل المجموعة:\n{e}")
 
-    # انتظر رد على رسالة sent_msg في القروب لمدة 15 ثانية
-    def check_response(resp):
-        return resp.is_reply and resp.reply_to_msg_id == sent_msg.id and resp.chat_id == sent_msg.chat_id
+    # تخزين الرسالة حتى نعرف أي رد يخصها
+    pending_checks[sent_msg.id] = event
 
-    try:
-        response = await l313l.wait_for(events.NewMessage(chats=sent_msg.chat_id), timeout=60, func=check_response)
-        await event.reply(f"🔎 النتيجة:\n\n{response.text}")
-    except Exception:
-        await event.reply("⚠️ لم يصل رد من البوت خلال المهلة المحددة.")
+    await event.reply("✅ تم إرسال الفحص، سوف يصلك الرد فوراً عند وصوله.")
+
+# مراقبة ردود القروب
+@l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
+async def on_group_reply(event: events.NewMessage.Event):
+    if event.is_reply:
+        replied_msg_id = event.reply_to_msg_id
+        if replied_msg_id in pending_checks:
+            user_event = pending_checks.pop(replied_msg_id)
+            await user_event.reply(f"🔎 النتيجة:\n\n{event.text}")
