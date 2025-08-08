@@ -4,7 +4,7 @@ from telethon import TelegramClient
 from telethon.tl.types import User, UserFull
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.events import NewMessage
-from JoKeRUB import l313l  # استدعاء الديكور الخاص بالسورس
+from JoKeRUB import l313l  # استيراد الديكور من JoKeRUB
 
 @l313l("ستوري")
 async def stories(event: NewMessage.Event):
@@ -27,19 +27,16 @@ async def stories(event: NewMessage.Event):
             await event.client(GetFullUserRequest(id=username))
         ).full_user
     except Exception as er:
-        await event.eor(f"**❃ خطأ : {er}**")
-        return
+        return await event.eor(f"**❃ خطأ : {er}**")
 
     stories = full_user.stories
     if not (stories and stories.stories):
-        await event.eor("**⌔∮ لم يتم العثور على ستوري خاص بالمستخدم**")
-        return
+        return await event.eor("**⌔∮ لم يتم العثور على ستوري خاص بالمستخدم**")
 
     for story in stories.stories:
-        client: TelegramClient = event.client
-        file = await client.download_media(story.media)
+        file = await event.client.download_media(story.media)
         await event.reply(
-            story.caption if story.caption else "",  # تجنب None في حال عدم وجود تعليق
+            story.caption if story.caption else "",
             file=file
         )
         os.remove(file)
