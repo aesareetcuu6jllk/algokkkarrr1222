@@ -2,7 +2,6 @@ from telethon import events
 from telethon.tl.functions.messages import ImportChatInviteRequest, SendMessageRequest
 from JoKeRUB import l313l
 
-# رابط الدعوة للمجموعة الخاصة بالفحص
 CHECK_GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
 
 @l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
@@ -18,7 +17,7 @@ async def sandal_cmd(event: events.NewMessage.Event):
         else:
             return await event.reply("❌ يرجى كتابة المعرف أو الرد على رسالة.")
 
-    # الانضمام للمجموعة من خلال الرابط
+    # الانضمام للمجموعة
     try:
         if "+" in CHECK_GROUP_LINK:
             hash_part = CHECK_GROUP_LINK.split("+")[1]
@@ -26,16 +25,18 @@ async def sandal_cmd(event: events.NewMessage.Event):
     except Exception:
         pass
 
+    # إرسال أمر الفحص واحفظ الرسالة
     try:
-        await l313l(SendMessageRequest(peer=CHECK_GROUP_LINK, message=f"فحص {input_text}"))
+        sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"فحص {input_text}")
     except Exception as e:
         return await event.reply(f"❌ فشل إرسال الفحص داخل المجموعة:\n{e}")
 
-    try:
-        async for msg in l313l.iter_messages(CHECK_GROUP_LINK, limit=10):
-            if msg.text and input_text in msg.text:
-                return await event.reply(f"🔎 النتيجة:\n\n{msg.text}")
-        await event.reply("❌ لم يتم العثور على رد من البوت.")
-    except Exception as e:
-        await event.reply(f"❌ حدث خطأ أثناء انتظار الرد:\n{e}")
+    # انتظر رد على رسالة sent_msg في القروب لمدة 15 ثانية
+    def check_response(resp):
+        return resp.is_reply and resp.reply_to_msg_id == sent_msg.id and resp.chat_id == sent_msg.chat_id
 
+    try:
+        response = await l313l.wait_for(events.NewMessage(chats=sent_msg.chat_id), timeout=15, func=check_response)
+        await event.reply(f"🔎 النتيجة:\n\n{response.text}")
+    except Exception:
+        await event.reply("⚠️ لم يصل رد من البوت خلال المهلة المحددة.")
