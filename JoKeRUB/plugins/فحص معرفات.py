@@ -1,3 +1,4 @@
+
 from telethon import events
 from telethon.tl.functions.messages import ImportChatInviteRequest
 from JoKeRUB import l313l
@@ -38,6 +39,8 @@ async def sandal_cmd(event: events.NewMessage.Event):
 
     # تخزين الرسالة حتى نعرف أي رد يخصها
     pending_checks[sent_msg.id] = event
+
+    await event.reply("ثانيه وفحص لك المعرف ")
 
 # مراقبة ردود القروب
 @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
