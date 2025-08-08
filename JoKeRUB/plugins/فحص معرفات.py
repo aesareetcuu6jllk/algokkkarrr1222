@@ -39,8 +39,6 @@ async def sandal_cmd(event: events.NewMessage.Event):
     # تخزين الرسالة حتى نعرف أي رد يخصها
     pending_checks[sent_msg.id] = event
 
-    await event.reply("✅ تم إرسال الفحص، سوف يصلك الرد فوراً عند وصوله.")
-
 # مراقبة ردود القروب
 @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
 async def on_group_reply(event: events.NewMessage.Event):
