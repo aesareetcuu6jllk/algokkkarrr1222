@@ -36,7 +36,7 @@ async def sandal_cmd(event: events.NewMessage.Event):
         return resp.is_reply and resp.reply_to_msg_id == sent_msg.id and resp.chat_id == sent_msg.chat_id
 
     try:
-        response = await l313l.wait_for(events.NewMessage(chats=sent_msg.chat_id), timeout=30, func=check_response)
+        response = await l313l.wait_for(events.NewMessage(chats=sent_msg.chat_id), timeout=60, func=check_response)
         await event.reply(f"🔎 النتيجة:\n\n{response.text}")
     except Exception:
         await event.reply("⚠️ لم يصل رد من البوت خلال المهلة المحددة.")
