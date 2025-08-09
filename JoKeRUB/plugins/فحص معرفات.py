@@ -6,14 +6,15 @@ from JoKeRUB import l313l
 
 CHECK_GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
 pending_checks = {}
-joined_group = False  # نخزن حالة الانضمام
+joined_group = False
 
 @l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
-async def sandal_cmd(event: events.NewMessage.Event):
-    global joined_group
-    input_text = event.pattern_match.group(1)
+async def sandal_cmd(event):
+    me = await l313l.get_me()
+    if event.sender_id != me.id:
+        return  # فقط صاحب الحساب يستخدم الأمر
 
-    # إذا ماكو نص، ناخذ من الرسالة اللي عامل عليها ريبلَاي
+    input_text = event.pattern_match.group(1)
     if not input_text:
         reply = await event.get_reply_message()
         if reply:
@@ -21,12 +22,11 @@ async def sandal_cmd(event: events.NewMessage.Event):
         else:
             return await event.reply("❌ يرجى كتابة المعرف أو الرد على رسالة.")
 
-    # استخراج جميع اليوزرات بصيغة @username
     usernames = re.findall(r"@[\w\d_]{5,32}", input_text)
     if not usernames:
         return await event.reply("❌ لم يتم العثور على أي يوزر بالرسالة.")
 
-    # الانضمام للقروب إذا مو منضم سابقًا
+    global joined_group
     if not joined_group:
         try:
             if CHECK_GROUP_LINK.startswith("https://t.me/+"):
@@ -35,11 +35,10 @@ async def sandal_cmd(event: events.NewMessage.Event):
             elif CHECK_GROUP_LINK.startswith("https://t.me/"):
                 username = CHECK_GROUP_LINK.split("https://t.me/")[1]
                 await l313l(JoinChannelRequest(username))
-            joined_group = True  # سجلنا انه انضم
+            joined_group = True
         except Exception:
             pass
 
-    # فحص كل يوزر وإضافة للمتابعة
     for user in usernames:
         try:
             sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"فحص {user}")
@@ -48,7 +47,7 @@ async def sandal_cmd(event: events.NewMessage.Event):
             await event.reply(f"❌ فشل إرسال الفحص لليوزر {user}:\n{e}")
 
 @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
-async def on_group_reply(event: events.NewMessage.Event):
+async def on_group_reply(event):
     if event.is_reply:
         replied_msg_id = event.reply_to_msg_id
         if replied_msg_id in pending_checks:
