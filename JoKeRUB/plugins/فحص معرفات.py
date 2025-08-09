@@ -1,5 +1,3 @@
-
-
 import re
 from telethon import events
 from telethon.tl.functions.messages import ImportChatInviteRequest
@@ -7,11 +5,12 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from JoKeRUB import l313l
 
 CHECK_GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
-
 pending_checks = {}
+joined_group = False  # نخزن حالة الانضمام
 
 @l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
 async def sandal_cmd(event: events.NewMessage.Event):
+    global joined_group
     input_text = event.pattern_match.group(1)
 
     # إذا ماكو نص، ناخذ من الرسالة اللي عامل عليها ريبلَاي
@@ -27,16 +26,18 @@ async def sandal_cmd(event: events.NewMessage.Event):
     if not usernames:
         return await event.reply("❌ لم يتم العثور على أي يوزر بالرسالة.")
 
-    # الانضمام للقروب إذا مو منضم
-    try:
-        if CHECK_GROUP_LINK.startswith("https://t.me/+"):
-            hash_part = CHECK_GROUP_LINK.split("+")[1]
-            await l313l(ImportChatInviteRequest(hash_part))
-        elif CHECK_GROUP_LINK.startswith("https://t.me/"):
-            username = CHECK_GROUP_LINK.split("https://t.me/")[1]
-            await l313l(JoinChannelRequest(username))
-    except Exception:
-        pass
+    # الانضمام للقروب إذا مو منضم سابقًا
+    if not joined_group:
+        try:
+            if CHECK_GROUP_LINK.startswith("https://t.me/+"):
+                hash_part = CHECK_GROUP_LINK.split("+")[1]
+                await l313l(ImportChatInviteRequest(hash_part))
+            elif CHECK_GROUP_LINK.startswith("https://t.me/"):
+                username = CHECK_GROUP_LINK.split("https://t.me/")[1]
+                await l313l(JoinChannelRequest(username))
+            joined_group = True  # سجلنا انه انضم
+        except Exception:
+            pass
 
     # فحص كل يوزر وإضافة للمتابعة
     for user in usernames:
