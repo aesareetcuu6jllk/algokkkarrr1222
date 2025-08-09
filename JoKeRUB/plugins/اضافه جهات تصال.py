@@ -16,6 +16,10 @@ KEYWORDS = [
     'ماكدر محظور'
 ]
 
+# أوامر التفعيل والتعطيل
+ENABLE_COMMANDS = ["تفعيل الردود للاضافة", "تشغيل الردود للاضافة"]
+DISABLE_COMMANDS = ["تعطيل الردود للاضافة", "ايقاف الردود للاضافة"]
+
 # حالة التفعيل
 guest_mode_enabled = True
 
@@ -26,19 +30,21 @@ async def group_reply_handler(event):
     if not event.is_group:
         return
 
-    msg_text = event.raw_text.lower().strip()
+    msg_text = event.raw_text.strip()
 
-    # أوامر تفعيل وتعطيل (تُنفذ فقط إذا الشخص كاتبها مباشرة بدون رد)
-    if msg_text == "تفعيل الضيف." and not event.is_reply:
-        if (await event.get_sender()).is_self:
-            guest_mode_enabled = True
-            await event.reply("✅ تم تفعيل أوامر الضيف.")
+    sender = await event.get_sender()
+    is_self_user = sender.is_self  # نتأكد أن اللي كاتب الأمر هو أنت
+
+    # أوامر التفعيل
+    if msg_text in ENABLE_COMMANDS and not event.is_reply and is_self_user:
+        guest_mode_enabled = True
+        await event.reply("✅ تم تفعيل الردود للإضافة.")
         return
 
-    if msg_text == "تعطيل الضيف." and not event.is_reply:
-        if (await event.get_sender()).is_self:
-            guest_mode_enabled = False
-            await event.reply("❌ تم تعطيل أوامر الضيف.")
+    # أوامر التعطيل
+    if msg_text in DISABLE_COMMANDS and not event.is_reply and is_self_user:
+        guest_mode_enabled = False
+        await event.reply("❌ تم تعطيل الردود للإضافة.")
         return
 
     if not guest_mode_enabled:
@@ -57,8 +63,6 @@ async def group_reply_handler(event):
     if not any(keyword in msg_text for keyword in KEYWORDS):
         return
 
-    sender = await event.get_sender()
-
     try:
         # إضافة لجهات الاتصال
         await l313l(AddContactRequest(
@@ -75,4 +79,3 @@ async def group_reply_handler(event):
         await event.reply("❌ ما أقدر أضيفك بسبب إعدادات الخصوصية.")
     except Exception as e:
         print(f"[❌] خطأ أثناء الإضافة أو الإرسال: {e}")
-
