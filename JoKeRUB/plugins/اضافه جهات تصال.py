@@ -16,12 +16,12 @@ KEYWORDS = [
     'ماكدر محظور'
 ]
 
-# أوامر التفعيل والتعطيل
-ENABLE_COMMANDS = ["تفعيل الردود للاضافة", "تشغيل الردود للاضافة"]
-DISABLE_COMMANDS = ["تعطيل الردود للاضافة", "ايقاف الردود للاضافة"]
+# أوامر التفعيل والتعطيل (بداية بنقطة)
+ENABLE_COMMANDS = [".تفعيل الردود للاضافة"]
+DISABLE_COMMANDS = [".تعطيل الردود للاضافة"]
 
-# حالة التفعيل
-guest_mode_enabled = True
+# حالة التفعيل (افتراضيًا معطل)
+guest_mode_enabled = False
 
 @l313l.on(events.NewMessage)
 async def group_reply_handler(event):
@@ -33,7 +33,7 @@ async def group_reply_handler(event):
     msg_text = event.raw_text.strip()
 
     sender = await event.get_sender()
-    is_self_user = sender.is_self  # نتأكد أن اللي كاتب الأمر هو أنت
+    is_self_user = sender.is_self  # نتأكد أن الأمر من صاحب الحساب
 
     # أوامر التفعيل
     if msg_text in ENABLE_COMMANDS and not event.is_reply and is_self_user:
@@ -47,6 +47,7 @@ async def group_reply_handler(event):
         await event.reply("❌ تم تعطيل الردود للإضافة.")
         return
 
+    # إذا النظام معطل، ما يكمل
     if not guest_mode_enabled:
         return
 
