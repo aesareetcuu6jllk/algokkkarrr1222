@@ -51,4 +51,4 @@ async def on_group_reply(event: events.NewMessage.Event):
         replied_msg_id = event.reply_to_msg_id
         if replied_msg_id in pending_checks:
             user_event, username = pending_checks.pop(replied_msg_id)
-            await user_event.reply(f"🔎 النتيجة لليوزر {username}:\n{event.text}")
+            await user_event.reply(f"{event.text}")
