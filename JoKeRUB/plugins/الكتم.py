@@ -42,25 +42,19 @@ def remove_from_mute_list(user_id):
 async def mutejep(event):
     if event.is_private:
         replied_user = await event.client.get_entity(event.chat_id)
-        if is_muted(event.chat_id, event.chat_id):  # Corrected this line
-            return await event.edit(
-                "**- هـذا المسـتخـدم مڪتـوم . . سـابقـاً **"
-            )
+        if is_muted(event.chat_id, event.chat_id):
+            return await event.edit("**- هـذا المسـتخـدم مڪتـوم . . سـابقـاً **")
         if event.chat_id == l313l.uid:
             return await edit_delete(event, "**𖡛... . لمـاذا تࢪيـد كتم نفسـك؟  ...𖡛**")
-        if event.chat_id == 705475246:
+        if event.chat_id == 1490479382:
             return await edit_delete(event, "** دي . . لا يمڪنني كتـم مطـور السـورس  ╰**")
         try:
-            mute(event.chat_id, event.chat_id)  # Corrected this line
+            mute(event.chat_id, event.chat_id)
             add_to_mute_list(replied_user)
         except Exception as e:
             await event.edit(f"**- خطــأ : **`{e}`")
         else:
-            return await event.client.send_file(
-                event.chat_id,
-                joker_mute,
-                caption="** تم ڪتـم الـمستخـدم  . . بنجـاح 🔕✓**",
-            )
+            return await event.edit("** تم ڪتـم الـمستخـدم  . . بنجـاح 🔕✓**")
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
@@ -87,69 +81,53 @@ async def mutejep(event):
         admin = chat.admin_rights
         creator = chat.creator
         if not admin and not creator:
-            return await edit_or_reply(
-                event, "** أنـا لسـت مشـرف هنـا ؟!! .**"
-            )
+            return await edit_or_reply(event, "** أنـا لسـت مشـرف هنـا ؟!! .**")
         if user.id == l313l.uid:
             return await edit_or_reply(event, "**𖡛... . لمـاذا تࢪيـد كتم نفسـك؟  ...𖡛**")
         if user.id == 705475246:
             return await edit_or_reply(event, "** دي . . لا يمڪنني كتـم مطـور السـورس  ╰**")
-        if is_muted(user.id, event.chat_id): 
-            return await edit_or_reply(
-                event, "**عــذراً .. هـذا الشخـص مكتــوم سـابقــاً هنـا**"
-            )
+        if is_muted(user.id, event.chat_id):
+            return await edit_or_reply(event, "**عــذراً .. هـذا الشخـص مكتــوم سـابقــاً هنـا**")
         result = await event.client.get_permissions(event.chat_id, user.id)
         try:
             if result.participant.banned_rights.send_messages:
-                return await edit_or_reply(
-                    event,
-                    "**عــذراً .. هـذا الشخـص مكتــوم سـابقــاً هنـا**",
-                )
+                return await edit_or_reply(event, "**عــذراً .. هـذا الشخـص مكتــوم سـابقــاً هنـا**")
         except AttributeError:
             pass
         except Exception as e:
             return await edit_or_reply(event, f"**- خطــأ : **`{e}`")
         try:
-            mute(user.id, event.chat_id) 
+            mute(user.id, event.chat_id)
             add_to_mute_list(user)
         except UserAdminInvalidError:
             if "admin_rights" in vars(chat) and vars(chat)["admin_rights"] is not None:
                 if chat.admin_rights.delete_messages is not True:
-                    return await edit_or_reply(
-                        event,
-                        "**- عــذراً .. ليـس لديـك صـلاحيـة حـذف الرسـائل هنـا**",
-                    )
+                    return await edit_or_reply(event, "**- عــذراً .. ليـس لديـك صـلاحيـة حـذف الرسـائل هنـا**")
             elif "creator" not in vars(chat):
-                return await edit_or_reply(
-                    event, "**- عــذراً .. ليـس لديـك صـلاحيـة حـذف الرسـائل هنـا**"
-                )
+                return await edit_or_reply(event, "**- عــذراً .. ليـس لديـك صـلاحيـة حـذف الرسـائل هنـا**")
         except Exception as e:
             return await edit_or_reply(event, f"**- خطــأ : **`{e}`")
+
         reason = event.pattern_match.group(1).split(maxsplit=1)[1] if len(event.pattern_match.group(1).split(maxsplit=1)) > 1 else ""
         if reason:
-            await event.client.send_file(
-                event.chat_id,
-                joker_mute,
-                caption=f"**- المستخـدم :** {_format.mentionuser(user.first_name ,user.id)}  \n**- تـم كتمـه بنجـاح ✓**\n\n**- السـبب :** {reason}",
-            )
+            await event.edit(f"**- المستخـدم :** {_format.mentionuser(user.first_name ,user.id)}\n**- تـم كتمـه بنجـاح ✓**\n\n**- السـبب :** {reason}")
         else:
-            await event.client.send_file(
-                event.chat_id,
-                joker_mute,
-                caption=f"**- المستخـدم :** {_format.mentionuser(user.first_name ,user.id)}  \n**- تـم كتمـه بنجـاح ✓**\n\n",
-            )
+            await event.edit(f"**- المستخـدم :** {_format.mentionuser(user.first_name ,user.id)}\n**- تـم كتمـه بنجـاح ✓**")
+
         if BOTLOG:
             await event.client.send_message(
                 BOTLOG_CHATID,
                 "#الكــتم\n"
                 f"**الشخـص :** [{user.first_name}](tg://user?id={user.id})\n"
                 f"**الدردشـه :** {get_display_name(await event.get_chat())}(`{event.chat_id}`)",
-            )   
+            )
+
 @l313l.on(events.NewMessage)
 async def handle_forwarded(event):
     if event.fwd_from:
         if is_muted(event.sender_id, event.chat_id):
             await event.delete()
+
 #=================== الغـــــــــــــاء الكـــــــــــــــتم  ===================  #
 
 @l313l.ar_cmd(pattern=f"(الغاء الكتم|الغاء كتم)(?:\s|$)([\s\S]*)")
