@@ -34,7 +34,7 @@ async def send_naal(event):
             reply_msg = await event.get_reply_message()
             await event.client.send_message(
                 event.chat_id,
-                NAAL_STICKER,
+                NnAAL_STICKER,
                 reply_to=reply_msg.id  # يرسل كرد على الرسالة اللي انت راد عليها
             )
         else:
