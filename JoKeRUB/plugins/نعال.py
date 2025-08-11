@@ -24,12 +24,16 @@ async def send_naal(event):
     except Exception as e:
         print("خطأ أثناء إرسال النعال:", e)
 
-NnAAL_STICKER = "هههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههه .متت"
+NnAAL_STICKER = "هههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههه .متت"
 @l313l.on(events.NewMessage(pattern=r"^(?:\.|)ه$"))
 async def send_naal(event):
+    # يتأكد إنه الرسالة من صاحب الحساب نفسه
+    if event.sender_id != l313l.uid:
+        return
+
     try:
         await event.delete()  # حذف رسالتك الأصلية
-        
+
         if event.is_reply:  
             reply_msg = await event.get_reply_message()
             await event.client.send_message(
@@ -43,4 +47,4 @@ async def send_naal(event):
                 NnAAL_STICKER  # يرسل بدون رد
             )
     except Exception as e:
-        print("خطأ أثناء إرسال النعال:", e)
+        print("خطأ أثناء إرسال النص:", e)
