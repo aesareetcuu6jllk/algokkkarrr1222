@@ -2,7 +2,7 @@ from telethon import events
 from JoKeRUB import l313l  # غيّرها إذا اسم الكلاينت مختلف
 
 # هنا تحط الإيموجي أو السمايل اللي تريده
-NAAL_EMOJI = "👞"  # مثلا نعال
+NAAL_EMOJI = "🩴"  # مثلا نعال
 
 @l313l.on(events.NewMessage(pattern=r"^\.تعال$"))
 async def naal_smile(event):
