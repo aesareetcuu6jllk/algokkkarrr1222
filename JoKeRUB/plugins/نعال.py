@@ -6,6 +6,10 @@ NAAL_STICKER = "🩴🩴"  # تقدر تحط رابط ملصق أو إيموجي
 
 @l313l.on(events.NewMessage(pattern=r"^(?:\.|)نعال$"))
 async def send_naal(event):
+    # تأكد إنه اللي كتب الرسالة هو صاحب الحساب
+    if event.sender_id != l313l.uid:
+        return
+
     try:
         await event.delete()  # حذف رسالتك الأصلية
         
@@ -23,6 +27,7 @@ async def send_naal(event):
             )
     except Exception as e:
         print("خطأ أثناء إرسال النعال:", e)
+
 
 NnAAL_STICKER = "هههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههه .متت"
 @l313l.on(events.NewMessage(pattern=r"^(?:\.|)ه$"))
