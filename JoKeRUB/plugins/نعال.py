@@ -4,7 +4,7 @@ from JoKeRUB import l313l  # غيّرها إذا اسم الكلاينت مخت�
 # هنا تحط الإيموجي أو السمايل اللي تريده
 NAAL_EMOJI = "🩴"  # مثلا نعال
 
-@l313l.on(events.NewMessage(pattern=r"^\.تعال$"))
+@l313l.on(events.NewMessage(pattern=r"^\.نعال$"))
 async def naal_smile(event):
     try:
         await event.delete()  # حذف رسالتك
