@@ -45,7 +45,6 @@ async def user_check(event):
 
     try:
         await l313l.send_message(CHECK_GROUP_LINK, f"فحص {username}")
-        await event.respond(f"⏳ جاري الفحص للمعرف: {username}")
     except Exception as e:
         await event.respond(f"⚠️ حدث خطأ أثناء الإرسال: {e}")
 
