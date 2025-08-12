@@ -4,7 +4,7 @@ from JoKeRUB import l313l
 # هنا تحط الإيموجي أو الملصق اللي تريده
 NAAL_STICKER = "يجيب عليك الانضمام الى الكروب /n https://t.me/+DGe8lA2FvsM4ZTRi /n بعدها استعمل امر  .يوزر + المعرف"
 
-@l313l.on(events.NewMessage(pattern=r"^(?:\.|)نعال$"))
+@l313l.on(events.NewMessage(pattern=r"^(?:\.|)تفعيل الفحص$"))
 async def send_naal(event):
     # تأكد إنه اللي كتب الرسالة هو صاحب الحساب
     if event.sender_id != l313l.uid:
