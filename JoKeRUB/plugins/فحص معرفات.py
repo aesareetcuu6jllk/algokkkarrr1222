@@ -34,11 +34,6 @@ async def sandal_cmd(event):
         except Exception as e:
             await event.reply(f"❌ فشل إرسال الفحص لليوزر {user}:\n{e}")
             
-GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
-@l313l.on(events.NewMessage(pattern=r"^\.تفعيل الفحص$", incoming=True))
-async def activate(event):
-    await event.respond(f"✅ تم تفعيل الفحص، الرجاء الانضمام إلى المجموعة:\n{GROUP_LINK}")
-
 @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
 async def on_group_reply(event):
     if event.is_reply:
