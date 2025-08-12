@@ -1,1 +1,75 @@
+import re
+from telethon import events
+from telethon.tl.functions.messages import ImportChatInviteRequest, CheckChatInviteRequest
+from telethon.tl.functions.channels import JoinChannelRequest
+from JoKeRUB import l313l
+
+CHECK_GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
+pending_checks = {}
+joined_group = False  # حالة الانضمام
+
+async def ensure_joined():
+    """يتأكد من الانضمام للقروب"""
+    global joined_group
+    if joined_group:
+        return True  # بالفعل منضم
+
+    try:
+        if CHECK_GROUP_LINK.startswith("https://t.me/+"):
+            hash_part = CHECK_GROUP_LINK.split("+")[1]
+            invite = await l313l(CheckChatInviteRequest(hash_part))
+            if getattr(invite, 'chat', None) and invite.chat.left:
+                await l313l(ImportChatInviteRequest(hash_part))
+        elif CHECK_GROUP_LINK.startswith("https://t.me/"):
+            username = CHECK_GROUP_LINK.split("https://t.me/")[1]
+            await l313l(JoinChannelRequest(username))
+
+        joined_group = True
+        print("[انضمام] ✅ تم الانضمام للقروب.")
+        return True
+    except Exception as e:
+        print(f"[انضمام] ❌ فشل الانضمام للقروب: {e}")
+        return False
+
+# محاولة الانضمام مرة وحدة عند بدء التشغيل
+@l313l.on(events.Connect)
+async def on_start(event):
+    await ensure_joined()
+
+@l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
+async def sandal_cmd(event):
+    me = await l313l.get_me()
+    if event.sender_id != me.id:
+        return  # فقط صاحب الحساب
+
+    input_text = event.pattern_match.group(1)
+    if not input_text:
+        reply = await event.get_reply_message()
+        if reply:
+            input_text = reply.text or ""
+        else:
+            return await event.reply("❌ يرجى كتابة المعرف أو الرد على رسالة.")
+
+    usernames = re.findall(r"@[\w\d_]{5,32}", input_text)
+    if not usernames:
+        return await event.reply("❌ لم يتم العثور على أي يوزر بالرسالة.")
+
+    # تحقق وقت الأمر إذا ما منضم
+    if not await ensure_joined():
+        return await event.reply("❌ لم أتمكن من الانضمام للقروب.")
+
+    for user in usernames:
+        try:
+            sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"فحص {user}")
+            pending_checks[sent_msg.id] = (event, user)
+        except Exception as e:
+            await event.reply(f"❌ فشل إرسال الفحص لليوزر {user}:\n{e}")
+
+@l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
+async def on_group_reply(event):
+    if event.is_reply:
+        replied_msg_id = event.reply_to_msg_id
+        if replied_msg_id in pending_checks:
+            user_event, username = pending_checks.pop(replied_msg_id)
+            await user_event.reply(f"{event.text}")
 
