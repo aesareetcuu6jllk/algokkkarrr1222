@@ -4,12 +4,32 @@ from JoKeRUB import l313l
 
 CHECK_GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
 pending_checks = {}
+activated_users = set()  # لتخزين الذين فعّلوا الفحص
 
-@l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
+@l313l.on(events.NewMessage(pattern=r"^\.تفعيل\s+فحص\s+اليوزرات$", incoming=True))
+async def activate(event):
+    user_id = event.sender_id
+    if user_id in activated_users:
+        await event.respond("✅ أنت مفعل سابقًا.")
+        return
+
+    activated_users.add(user_id)
+    await event.respond(
+        f"✅ تم تفعيل فحص اليوزرات لك.\n"
+        f"🔗 الرجاء الانضمام إلى المجموعة:\n{CHECK_GROUP_LINK}\n"
+        "ثم استخدم الأمر:\n`.يوزر @username` أو قم بالرد على رسالة تحتوي المعرف وأرسل `.يوزر`"
+    )
+
+@l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?", incoming=True))
 async def sandal_cmd(event):
+    user_id = event.sender_id
+    if user_id not in activated_users:
+        await event.respond("❌ لازم تفعيل فحص اليوزرات بالأمر:\n`.تفعيل فحص اليوزرات`")
+        return
+
     me = await l313l.get_me()
-    if event.sender_id != me.id:
-        return  # فقط صاحب الحساب يستخدم الأمر
+    if user_id != me.id:
+        return  # الأمر يعمل فقط من صاحب الحساب (اختياري، لو تريد تزيل هذا الشرط احذفه)
 
     input_text = event.pattern_match.group(1)
     if not input_text:
@@ -23,9 +43,7 @@ async def sandal_cmd(event):
     if not usernames:
         return await event.reply("❌ لم يتم العثور على أي يوزر بالرسالة.")
 
-    # **هنا تم حذف الانضمام التلقائي**
-    # تأكد من أن الحساب دخل المجموعة يدويًا قبل استخدام هذا الأمر
-
+    # تأكد أن الحساب مشترك يدويًا في المجموعة، بدون انضمام تلقائي هنا
     for user in usernames:
         try:
             sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"فحص {user}")
