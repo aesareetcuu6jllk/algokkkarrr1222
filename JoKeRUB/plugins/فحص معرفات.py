@@ -1,66 +1,43 @@
+import re
 from telethon import events
 from JoKeRUB import l313l
 
 CHECK_GROUP_LINK = "https://t.me/+DGe8lA2FvsM4ZTRi"
-activated_users = set()
 pending_checks = {}
 
-@l313l.on(events.NewMessage(pattern=r"^\.تفعيل\s+فحص\s+اليوزرات$", incoming=True))
-async def activate(event):
-    activated_users.add(event.sender_id)
-    await event.respond(
-        f"✅ تم تفعيل الفحص.\n🔗 انضم للمجموعة:\n{CHECK_GROUP_LINK}\n"
-        "ثم استخدم الأمر:\n`.يوزر المعرف` أو قم بالرد على رسالة المعرف وأرسل `.يوزر`"
-    )
+@l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
+async def sandal_cmd(event):
+    me = await l313l.get_me()
+    if event.sender_id != me.id:
+        return  # فقط صاحب الحساب يستخدم الأمر
 
-@l313l.on(events.NewMessage(pattern=r"^\.يوزر(?:\s+(\S+))?$", incoming=True))
-async def user_check(event):
-    user_id = event.sender_id
-    if user_id not in activated_users:
-        await event.respond("❌ لازم تفعيل فحص اليوزرات بالأمر:\n`.تفعيل فحص اليوزرات`")
-        return
+    input_text = event.pattern_match.group(1)
+    if not input_text:
+        reply = await event.get_reply_message()
+        if reply:
+            input_text = reply.text or ""
+        else:
+            return await event.reply("❌ يرجى كتابة المعرف أو الرد على رسالة.")
 
-    username = None
+    usernames = re.findall(r"@[\w\d_]{5,32}", input_text)
+    if not usernames:
+        return await event.reply("❌ لم يتم العثور على أي يوزر بالرسالة.")
 
-    # أولاً نحاول ناخذ اليوزر من النص بعد الأمر
-    if event.pattern_match.group(1):
-        username = event.pattern_match.group(1).strip()
-    # إذا ما كان مكتوب مع الأمر، نجرب ناخذ من رسالة الرد
-    elif event.is_reply:
-        reply_msg = await event.get_reply_message()
-        # نفترض اليوزر يكون في نص الرسالة، ناخذ أول كلمة
-        # أو ممكن تعدل حسب شكل معرفاتك
-        if reply_msg.text:
-            words = reply_msg.text.strip().split()
-            if words:
-                username = words[0]
+    # **هنا تم حذف الانضمام التلقائي**
+    # تأكد من أن الحساب دخل المجموعة يدويًا قبل استخدام هذا الأمر
 
-    if not username:
-        await event.respond("❌ لم يتم العثور على معرف للفحص. اكتب `.يوزر المعرف` أو قم بالرد على رسالة تحتوي المعرف ثم أرسل `.يوزر`")
-        return
-
-    username = username.lstrip("@+")
-
-    pending_checks[username.lower()] = event.chat_id
-
-    try:
-        await l313l.send_message(CHECK_GROUP_LINK, f"فحص {username}")
-    except Exception as e:
-        await event.respond(f"⚠️ حدث خطأ أثناء الإرسال: {e}")
+    for user in usernames:
+        try:
+            sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"فحص {user}")
+            pending_checks[sent_msg.id] = (event, user)
+            await event.reply(f"⏳ جاري الفحص للمعرف: {user}")
+        except Exception as e:
+            await event.reply(f"❌ فشل إرسال الفحص لليوزر {user}:\n{e}")
 
 @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
-async def catch_response(event):
-    text = event.raw_text.strip()
-    text_lower = text.lower()
-
-    if text_lower.startswith("فحص"):
-        return
-
-    for username, target_chat in list(pending_checks.items()):
-        if username in text_lower:
-            try:
-                await l313l.send_message(target_chat, f"📩 نتيجة الفحص:\n{text}")
-            except Exception:
-                pass
-            del pending_checks[username]
-            break
+async def on_group_reply(event):
+    if event.is_reply:
+        replied_msg_id = event.reply_to_msg_id
+        if replied_msg_id in pending_checks:
+            user_event, username = pending_checks.pop(replied_msg_id)
+            await user_event.reply(f"📩 نتيجة فحص {username}:\n{event.text}")
