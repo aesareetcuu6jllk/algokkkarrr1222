@@ -53,3 +53,37 @@ async def send_naal(event):
             )
     except Exception as e:
         print("خطأ أثناء إرسال النص:", e)
+
+
+
+@l313l.on(events.NewMessage(pattern=r"^(?:\.|)طريقه$"))
+async def send_methods(event):
+    # بس يشتغل إذا صاحب الحساب كتب الأمر
+    if event.sender_id != l313l.uid:
+        return
+
+    try:
+        await event.delete()  # حذف رسالتك الأصلية
+
+        text = (
+            "**📌 طرق الاستخراج:**\n\n"
+            "🔹 [الطريقة الأولى](https://t.me/sesonhellas/19)\n"
+            "🔹 [الطريقة الثانية](https://t.me/sesonhellas/20)\n\n"
+            "**🌍 المواقع والأدوات المستخدمة:**\n"
+            "▫️ موقع الاستخراج: [telegram.tools](https://telegram.tools)\n\n"
+            "**🔑 بيانات API:**\n"
+            f"▫️ API ID: `29827519`\n"
+            f"▫️ API HASH: `9afadf1ec94457c6bb383139555a2bdc`\n"
+        )
+
+        await event.client.send_message(
+            event.chat_id,
+            text,
+            link_preview=False  # بدون معاينة روابط
+        )
+
+    except Exception as e:
+        print("خطأ أثناء إرسال الطرق:", e)
+
+
+
