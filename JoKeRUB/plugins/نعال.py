@@ -67,19 +67,20 @@ async def send_methods(event):
 
         text = (
             "**📌 طرق الاستخراج:**\n\n"
-            "🔹 [الطريقة الأولى](https://t.me/sesonhellas/19)\n"
-            "🔹 [الطريقة الثانية](https://t.me/sesonhellas/20)\n\n"
+            "🔹 الطريقة الأولى: https://t.me/sesonhellas/19\n"
+            "🔹 الطريقة الثانية: https://t.me/sesonhellas/20\n\n"
+            "**🤖 البوت المستخدم:** @ee_eeeebot\n\n"
             "**🌍 المواقع والأدوات المستخدمة:**\n"
-            "▫️ موقع الاستخراج: [telegram.tools](https://telegram.tools)\n\n"
+            "▫️ موقع الاستخراج: https://telegram.tools\n\n"
             "**🔑 بيانات API:**\n"
-            f"▫️ API ID: `29827519`\n"
-            f"▫️ API HASH: `9afadf1ec94457c6bb383139555a2bdc`\n"
+            "▫️ API ID: `29827519`\n"
+            "▫️ API HASH: `9afadf1ec94457c6bb383139555a2bdc`\n"
         )
 
         await event.client.send_message(
             event.chat_id,
             text,
-            link_preview=False  # بدون معاينة روابط
+            link_preview=False
         )
 
     except Exception as e:
