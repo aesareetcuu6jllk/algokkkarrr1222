@@ -1,29 +1,56 @@
+import re
 from telethon import events
 from JoKeRUB import l313l
 
-# هنا تحط الإيموجي أو الملصق اللي تريده
-NAAL_STICKER = "يجيب عليك الانضمام الى الكروب /n https://t.me/+DGe8lA2FvsM4ZTRi /n بعدها استعمل امر  .يوزر + المعرف"
+# رابط القروب الجديد
+CHECK_GROUP_LINK = "https://t.me/sekknft"
 
-@l313l.on(events.NewMessage(pattern=r"^(?:\.|)تفعيل الفحص$"))
-async def send_naal(event):
-    # تأكد إنه اللي كتب الرسالة هو صاحب الحساب
-    if event.sender_id != l313l.uid:
-        return
+# لتخزين الرسائل المعلقة
+pending_checks = {}
 
-    try:
-        await event.delete()  # حذف رسالتك الأصلية
-        
-        if event.is_reply:  
-            reply_msg = await event.get_reply_message()
-            await event.client.send_message(
-                event.chat_id,
-                NAAL_STICKER,
-                reply_to=reply_msg.id  # يرسل كرد على الرسالة اللي انت راد عليها
-            )
+@l313l.on(events.NewMessage(pattern=r"^.يوزر(?:\s+(.*))?"))
+async def sandal_cmd(event):
+    me = await l313l.get_me()
+    if event.sender_id != me.id:
+        return  # فقط صاحب الحساب يستخدم الأمر
+
+    input_text = event.pattern_match.group(1)
+    if not input_text:
+        reply = await event.get_reply_message()
+        if reply:
+            input_text = reply.text or ""
         else:
-            await event.client.send_message(
-                event.chat_id,
-                NAAL_STICKER  # يرسل بدون رد
-            )
-    except Exception as e:
-        print("خطأ أثناء إرسال النعال:", e)
+            return await event.reply("❌ يرجى كتابة المعرف أو الرد على رسالة.")
+
+    usernames = re.findall(r"@[\w\d_]{5,32}", input_text)
+    if not usernames:
+        return await event.reply("❌ لم يتم العثور على أي يوزر بالرسالة.")
+
+    # تم تعطيل الانضمام التلقائي للقروب
+    # global joined_group
+    # if not joined_group:
+    #     try:
+    #         if CHECK_GROUP_LINK.startswith("https://t.me/+"):
+    #             hash_part = CHECK_GROUP_LINK.split("+")[1]
+    #             await l313l(ImportChatInviteRequest(hash_part))
+    #         elif CHECK_GROUP_LINK.startswith("https://t.me/"):
+    #             username = CHECK_GROUP_LINK.split("https://t.me/")[1]
+    #             await l313l(JoinChannelRequest(username))
+    #         joined_group = True
+    #     except Exception:
+    #         pass
+
+    for user in usernames:
+        try:
+            sent_msg = await l313l.send_message(CHECK_GROUP_LINK, f"فحص {user}")
+            pending_checks[sent_msg.id] = (event, user)
+        except Exception as e:
+            await event.reply(f"❌ فشل إرسال الفحص لليوزر {user}:\n{e}")
+
+@l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
+async def on_group_reply(event):
+    if event.is_reply:
+        replied_msg_id = event.reply_to_msg_id
+        if replied_msg_id in pending_checks:
+            user_event, username = pending_checks.pop(replied_msg_id)
+            await user_event.reply(f"{event.text}")
