@@ -18,5 +18,4 @@ async def forward_to_group(event):
         else:
             await l313l.send_message(event.sender_id, f"❌ لم يتم العثور على ملف صوتي لـ: {input_text}")
 
-        # بعد إرسال الملف الصوتي، نحذف هذا الهاندلر ليوقف المتابعة
         l313l.remove_event_handler(reply_handler)
