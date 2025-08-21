@@ -3,24 +3,40 @@ from JoKeRUB import l313l
 
 CHECK_GROUP_LINK = "https://t.me/sekknft"
 
-@l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK, pattern=r"^\.يوت\s+(.*)"))
-async def yt_auto(event):
+# تخزين حالة كل مستخدم: 'waiting' = تم إرسال الأمر للقروب، 'ready' = جاهز لإرسال الملف
+user_state = {}
+
+@l313l.on(events.NewMessage(pattern=r"^\.يوت\s+(.*)"))
+async def forward_to_group(event):
     input_text = event.pattern_match.group(1)
     user_id = event.sender_id
 
-    # ===== المرحلة الأولى: أزرار تلقائية =====
-    stage1_choices = ["اختيار 1", "اختيار 2", "اختيار 3"]
-    stage1_choice = stage1_choices[0]  # يختار البوت تلقائيًا الخيار الأول
+    # إعادة صياغة الأمر لإرساله للقروب
+    message_to_group = f"يوت {input_text}"
+    sent_msg = await l313l.send_message(CHECK_GROUP_LINK, message_to_group)
 
-    # ===== المرحلة الثانية: نوع المحتوى =====
-    stage2_choices = ["ملف صوتي", "مقطع فيديو"]
-    stage2_choice = stage2_choices[0]  # يختار البوت تلقائيًا "ملف صوتي"
+    # حفظ حالة المستخدم والرسالة التي أرسلها البوت بالقروب
+    user_state[user_id] = {
+        'status': 'waiting',  # أول رد سيتم تجاهله
+        'input_text': input_text,
+        'group_msg_id': sent_msg.id
+    }
 
-    # ===== البحث عن الملف الصوتي في القروب =====
-    async for msg in l313l.iter_messages(CHECK_GROUP_LINK, limit=50):
-        if msg.audio and input_text in (msg.message or ""):
-            await l313l.send_file(user_id, msg.audio)  # إرسال الملف الصوتي مباشرة
-            return
-
-    # إذا لم يوجد ملف صوتي
-    await l313l.send_message(user_id, f"❌ لم يتم العثور على ملف صوتي لـ: {input_text}")
+# متابعة أي رسالة جديدة بالقروب
+@l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
+async def check_group_reply(event):
+    for user_id, info in list(user_state.items()):
+        # نتحقق أن هذه الرسالة هي الرد على رسالة البوت بالقروب
+        if event.is_reply and event.reply_to_msg_id == info['group_msg_id']:
+            if info['status'] == 'waiting':
+                # أول رد للبوت يتم تجاهله
+                user_state[user_id]['status'] = 'ready'
+                return
+            elif info['status'] == 'ready':
+                # الرد الثاني يحتوي على الملف الصوتي
+                if event.audio:
+                    await l313l.send_file(user_id, event.audio)
+                else:
+                    await l313l.send_message(user_id, f"❌ لم يتم العثور على ملف صوتي لـ: {info['input_text']}")
+                # إزالة حالة المستخدم بعد الإرسال
+                user_state.pop(user_id)
