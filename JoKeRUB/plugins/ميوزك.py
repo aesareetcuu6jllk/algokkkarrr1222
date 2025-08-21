@@ -27,8 +27,12 @@ async def forward_to_group(event):
 
     replies = {"count": 0}
 
-    @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK, reply_to=sent_msg.id))
+    @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
     async def reply_handler(reply_event):
+        # نتأكد انو الرد فعلاً على رسالتنا
+        if reply_event.reply_to_msg_id != sent_msg.id:
+            return
+
         replies["count"] += 1
 
         if replies["count"] == 1:
@@ -37,7 +41,7 @@ async def forward_to_group(event):
         elif replies["count"] == 2:
             # الرد الثاني
             if reply_event.audio:
-                # يرد على رسالتك الأصلية مباشرة
+                # يرد على رسالتك الأصلية (وين ما كتبت الأمر)
                 await l313l.send_file(chat_id, reply_event.audio, reply_to=original_msg_id)
             else:
                 await l313l.send_message(chat_id, f"❌ ماكو بصمة لـ: {input_text}", reply_to=original_msg_id)
