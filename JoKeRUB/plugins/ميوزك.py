@@ -1,27 +1,25 @@
-from telethon import events, types
+from telethon import events
 from JoKeRUB import l313l
 
 CHECK_GROUP_LINK = "https://t.me/sekknft"
 
-@l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK, pattern=r"^يوت\s+(.*)"))
-async def auto_yt(event):
+@l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK, pattern=r"^\.يوت\s+(.*)"))
+async def yt_auto(event):
     input_text = event.pattern_match.group(1)
     user_id = event.sender_id
 
-    # المرحلة الأولى: اختيار تلقائي
-    stage1_choice = "اختيار 1"
+    # ===== المرحلة الأولى: أزرار تلقائية =====
+    stage1_choices = ["اختيار 1", "اختيار 2", "اختيار 3"]
+    stage1_choice = stage1_choices[0]  # يختار البوت تلقائيًا الخيار الأول
 
-    # المرحلة الثانية: اختيار تلقائي ملف صوتي
-    stage2_choice = "ملف صوتي"
+    # ===== المرحلة الثانية: نوع المحتوى =====
+    stage2_choices = ["ملف صوتي", "مقطع فيديو"]
+    stage2_choice = stage2_choices[0]  # يختار البوت تلقائيًا "ملف صوتي"
 
-    # إرسال البحث للقروب (يمكن القروب يحتوي ملفات صوتية مرتبطة)
-    await l313l.send_message(CHECK_GROUP_LINK, f"يوت {input_text} {stage1_choice} {stage2_choice}")
-
-    # البحث في القروب عن أول رسالة تحتوي الملف الصوتي بعد البحث
+    # ===== البحث عن الملف الصوتي في القروب =====
     async for msg in l313l.iter_messages(CHECK_GROUP_LINK, limit=50):
         if msg.audio and input_text in (msg.message or ""):
-            # إرسال الملف الصوتي للمستخدم مباشرة
-            await l313l.send_file(user_id, msg.audio)
+            await l313l.send_file(user_id, msg.audio)  # إرسال الملف الصوتي مباشرة
             return
 
     # إذا لم يوجد ملف صوتي
