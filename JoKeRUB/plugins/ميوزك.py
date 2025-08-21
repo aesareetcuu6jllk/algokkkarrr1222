@@ -14,8 +14,10 @@ async def forward_to_group(event):
     @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK, reply_to=sent_msg.id))
     async def reply_handler(reply_event):
         if reply_event.audio:
+            # يرسل البصمة **لك فقط**، الحساب الذي كتب الأمر
             await l313l.send_file(event.sender_id, reply_event.audio)
         else:
             await l313l.send_message(event.sender_id, f"❌ لم يتم العثور على ملف صوتي لـ: {input_text}")
 
+        # بعد الإرسال، نحذف الهاندلر
         l313l.remove_event_handler(reply_handler)
