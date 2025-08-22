@@ -41,10 +41,19 @@ async def forward_to_group(event):
         elif replies["count"] == 2:
             # الرد الثاني
             if reply_event.audio:
-                # يرد على رسالتك الأصلية (وين ما كتبت الأمر)
-                await l313l.send_file(chat_id, reply_event.audio, reply_to=original_msg_id)
+                # يرد على رسالتك الأصلية (وين ما كتبت الأمر) + التاغات
+                await l313l.send_file(
+                    chat_id,
+                    reply_event.audio,
+                    caption=f"@psggg  _  @mhxxx",
+                    reply_to=original_msg_id
+                )
             else:
-                await l313l.send_message(chat_id, f"❌ ماكو بصمة لـ: {input_text}", reply_to=original_msg_id)
+                await l313l.send_message(
+                    chat_id,
+                    f"❌ ماكو بصمة لـ: {input_text}",
+                    reply_to=original_msg_id
+                )
 
             # نشيل الهاندلر بعد ما يشتغل
             l313l.remove_event_handler(reply_handler)
