@@ -5,8 +5,8 @@ from JoKeRUB import l313l  # ← تأكد من المسار الصحيح
 target_chats = []       # قائمة الكروبات المفعلة
 sent_users = set()      # لتخزين اليوزرات المرسلة وتجنب التكرار
 
-# مراقبة أمر التفعيل
-@l313l.on(events.NewMessage(pattern=r"^\.تفعيل احبك$"))
+# مراقبة أمر التفعيل الجديد
+@l313l.on(events.NewMessage(pattern=r"^\.تفعيل هيلاس$"))
 async def activate_monitor(event):
     global target_chats
 
@@ -24,6 +24,26 @@ async def activate_monitor(event):
             print(f"[⚠️] هذه المجموعة مفعلة مسبقًا: {chat_id_str}")
     except Exception as e:
         print(f"[❌] حدث خطأ أثناء تفعيل المراقبة: {e}")
+
+# مراقبة أمر الإيقاف
+@l313l.on(events.NewMessage(pattern=r"^\.ايقاف$"))
+async def stop_monitor(event):
+    global target_chats, sent_users
+
+    sender = await event.get_sender()
+    if not sender or not sender.is_self:
+        return  # يجب أن يكون الأمر من نفس الحساب
+
+    try:
+        chat = await event.get_chat()
+        chat_id_str = str(chat.id)
+        if chat_id_str in target_chats:
+            target_chats.remove(chat_id_str)
+            print(f"[❌] تم إيقاف المراقبة على هذه المجموعة: {chat_id_str}")
+        else:
+            print(f"[⚠️] هذه المجموعة ليست مفعلة: {chat_id_str}")
+    except Exception as e:
+        print(f"[❌] حدث خطأ أثناء إيقاف المراقبة: {e}")
 
 # مراقبة الرسائل الجديدة في المجموعات المفعلة
 @l313l.on(events.NewMessage)
