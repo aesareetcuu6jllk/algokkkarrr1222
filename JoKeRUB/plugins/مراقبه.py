@@ -5,8 +5,8 @@ from JoKeRUB import l313l  # ← تأكد من المسار الصحيح
 target_chats = []       # قائمة الكروبات المفعلة
 sent_users = set()      # لتخزين اليوزرات المرسلة وتجنب التكرار
 
-# مراقبة أمر التفعيل الجديد
-@l313l.on(events.NewMessage(pattern=r"^\.تفعيل هيلاس$"))
+# مراقبة أمر التفعيل
+@l313l.on(events.NewMessage(pattern=r"^\.تفعيل احبك$"))
 async def activate_monitor(event):
     global target_chats
 
