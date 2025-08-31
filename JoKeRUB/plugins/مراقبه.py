@@ -11,14 +11,13 @@ DISABLE_PATTERN = r"^\.تعطيل مراقبة\s*(.*)$"
 
 def extract_chat_identifier(text: str):
     text = text.strip()
-    # رابط خاص أو ID مباشر
+    # ID مباشر أو رابط خاص
     match = re.search(r"(?:https://t\.me/c/|^)(\d+)", text)
     if match:
         return f"-100{match.group(1)}"
-    # ID مباشر يبدأ بـ -100
     if text.startswith("-100"):
         return text
-    return None  # لن يقبل أي شيء آخر
+    return None  # لا يقبل أي شيء آخر
 
 @l313l.on(events.NewMessage)
 async def monitor_handler(event):
@@ -62,18 +61,19 @@ async def monitor_handler(event):
         chat_id_str = str(chat.id)
         if chat_id_str not in target_chats:
             return
-    except Exception:
+    except Exception as e:
+        print(f"[⚠️] خطأ أثناء الحصول على الكروب: {e}")
         return
 
-    # أرسل username فقط إذا موجود
+    # أرسل username فقط إذا موجود، وإلا اطبع ID في الكونسول
     if sender.username:
         username = f"@{sender.username}"
-        if username in sent_users:
-            return
-        sent_users.add(username)
-
-        try:
-            await l313l.send_message("me", username)
-            print(f"[✅] أرسل: {username}")
-        except Exception as e:
-            print(f"[❌] خطأ أثناء الإرسال: {e}")
+        if username not in sent_users:
+            sent_users.add(username)
+            try:
+                await l313l.send_message("me", username)
+                print(f"[✅] أرسل: {username}")
+            except Exception as e:
+                print(f"[❌] خطأ أثناء الإرسال: {e}")
+    else:
+        print(f"[⚠️] المرسل بدون username، ID: {sender.id}")
