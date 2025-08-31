@@ -5,31 +5,34 @@ from JoKeRUB import l313l  # ← تأكد من المسار الصحيح
 target_chats = []       # قائمة الكروبات المفعلة
 sent_users = set()      # لتخزين اليوزرات المرسلة وتجنب التكرار
 
+# مراقبة أمر التفعيل
 @l313l.on(events.NewMessage(pattern=r"^\.تفعيل احبك$"))
-async def monitor_handler(event):
-    global target_chats, sent_users
+async def activate_monitor(event):
+    global target_chats
 
     sender = await event.get_sender()
-    if not sender:
-        return
+    if not sender or not sender.is_self:
+        return  # يجب أن يكون الأمر من نفس الحساب
 
-    # تأكد أن الأمر من صاحب الحساب
-    if sender.is_self:
-        try:
-            chat = await event.get_chat()
-            chat_id_str = str(chat.id)
-            if chat_id_str not in target_chats:
-                target_chats.append(chat_id_str)
-                # ✅ تم حذف الرد على الرسالة، فقط يضيف المجموعة للمراقبة
-            # لا نرسل أي رسالة
-        except Exception as e:
-            print(f"[❌] حدث خطأ أثناء تفعيل المراقبة: {e}")
-        return
+    try:
+        chat = await event.get_chat()
+        chat_id_str = str(chat.id)
+        if chat_id_str not in target_chats:
+            target_chats.append(chat_id_str)
+            print(f"[✅] تمت إضافة المجموعة للمراقبة: {chat_id_str}")
+        else:
+            print(f"[⚠️] هذه المجموعة مفعلة مسبقًا: {chat_id_str}")
+    except Exception as e:
+        print(f"[❌] حدث خطأ أثناء تفعيل المراقبة: {e}")
+
+# مراقبة الرسائل الجديدة في المجموعات المفعلة
+@l313l.on(events.NewMessage)
+async def monitor_messages(event):
+    global target_chats, sent_users
 
     if not target_chats:
         return
 
-    # تحقق أن الرسالة من مجموعة مفعلة
     try:
         chat = await event.get_chat()
         chat_id_str = str(chat.id)
@@ -38,7 +41,11 @@ async def monitor_handler(event):
     except Exception:
         return
 
-    # أرسل username فقط إذا موجود
+    sender = await event.get_sender()
+    if not sender:
+        return
+
+    # أرسل username فقط إذا موجود، وإلا اطبع ID في الكونسول
     if sender.username:
         username = f"@{sender.username}"
         if username not in sent_users:
