@@ -11,6 +11,36 @@ target_chat = None  # نخزن هنا الكروب المحدد
 ENABLE_PATTERN = r"^\.تفعيل مراقبة\s+(.+)$"
 DISABLE_COMMANDS = [".تعطيل مراقبة"]
 
+def extract_chat_identifier(text: str):
+    """
+    يحوّل الرابط أو النص المدخل إلى شكل مناسب (id أو username).
+    يقبل:
+    - رابط عام: https://t.me/groupname
+    - رابط خاص: https://t.me/c/123456789/1
+    - آيدي مباشر: -100xxxxxxxxxx
+    - يوزر مباشر: groupname
+    """
+    text = text.strip()
+
+    # رابط عام
+    if text.startswith("https://t.me/") and not "/c/" in text:
+        return text.replace("https://t.me/", "").strip()
+
+    # رابط خاص (t.me/c/123456789/...)
+    if "t.me/c/" in text:
+        # نستخرج الرقم
+        match = re.search(r"t\.me/c/(\d+)", text)
+        if match:
+            return f"-100{match.group(1)}"
+
+    # إذا آيدي مباشر
+    if text.startswith("-100"):
+        return text
+
+    # إذا بس يوزر (مثل groupname)
+    return text
+
+
 @l313l.on(events.NewMessage)
 async def monitor_handler(event):
     global monitor_enabled, target_chat
@@ -24,11 +54,8 @@ async def monitor_handler(event):
         # تفعيل
         match = re.match(ENABLE_PATTERN, msg_text)
         if match and not event.is_reply:
-            target_chat = match.group(1).strip()
-
-            # لو الرابط t.me نصفيه
-            if target_chat.startswith("https://t.me/"):
-                target_chat = target_chat.replace("https://t.me/", "").strip()
+            raw_value = match.group(1).strip()
+            target_chat = extract_chat_identifier(raw_value)
 
             monitor_enabled = True
             await event.reply(f"✅ المراقبة فعّالة على: {target_chat}")
@@ -45,7 +72,7 @@ async def monitor_handler(event):
     if not monitor_enabled or not target_chat:
         return
 
-    # نتحقق أن الرسالة من الكروب المحدد
+    # نتحقق أن الرسالة من الكروب المطلوب
     try:
         chat = await event.get_chat()
         chat_username = getattr(chat, "username", None)
