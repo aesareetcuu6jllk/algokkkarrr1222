@@ -1,20 +1,18 @@
 import re
-from telethon import events, Button
+import asyncio
+from telethon import events
 from JoKeRUB import l313l
 
-# رابط الكروب للفحص
 CHECK_GROUP_LINK = "https://t.me/sekknft"
 
-# لتخزين الرسائل المعلقة
 pending_checks = {}
-# لتخزين نتائج المعرفات
 usernames_map = {}
 
 @l313l.on(events.NewMessage(pattern=r"^.معرفاته(?:\s+(.*))?"))
 async def sandal_cmd(event):
     me = await l313l.get_me()
     if event.sender_id != me.id:
-        return  # فقط صاحب الحساب يستخدم الأمر
+        return
 
     input_text = event.pattern_match.group(1)
     if not input_text:
@@ -38,34 +36,74 @@ async def sandal_cmd(event):
 
 @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
 async def on_group_reply(event):
-    if event.is_reply:
-        replied_msg_id = event.reply_to_msg_id
-        if replied_msg_id in pending_checks:
-            user_event, username = pending_checks.pop(replied_msg_id)
+    # لازم يكون رد على رسالة فحص مالنا
+    if not event.is_reply:
+        return
 
-            # اول شي يبعثلك انه جاري الجلب
-            msg = await user_event.reply("⏳ يتم جلب المعرفات ...")
+    replied_msg_id = event.reply_to_msg_id
+    if replied_msg_id not in pending_checks:
+        return
 
-            text = event.text
-            # استخراج المعرفات إذا موجودة
-            found_users = re.findall(r"@[\w\d_]{3,32}", text)
-            if found_users:
-                usernames_map[username] = found_users
-                await msg.edit(
-                    f"{text}",
-                    buttons=[Button.inline("عرض كل المعرفات", data=f"show:{username}")]
+    user_event, username = pending_checks.pop(replied_msg_id)
+
+    # رسالة انتظار بمكان تنفيذ الأمر
+    wait_msg = await user_event.reply("⏳ يتم جلب المعرفات ...")
+
+    # نحاول نضغط زر "عرض كل اليوزرات" تلقائي
+    final_text = event.text or ""
+    try:
+        # إذا موجود زر بنفس الرسالة
+        if getattr(event, "buttons", None):
+            # نضغط الزر بالنص (تقدر تغيّر النص إذا يختلف)
+            await event.click(text="عرض كل اليوزرات")
+
+            # ننتظر تعديل الرسالة أو رسالة جديدة من نفس البوت
+            msg_id = event.id
+            bot_id = event.sender_id
+
+            edited = None
+            try:
+                edited = await l313l.wait_for(
+                    events.MessageEdited(chats=CHECK_GROUP_LINK, ids=msg_id),
+                    timeout=8
                 )
+            except asyncio.TimeoutError:
+                edited = None
+
+            if edited:
+                final_text = edited.text or final_text
             else:
-                await msg.edit(f"{text}")
+                try:
+                    new_msg = await l313l.wait_for(
+                        events.NewMessage(chats=CHECK_GROUP_LINK, from_users=bot_id),
+                        timeout=5
+                    )
+                    final_text = new_msg.text or final_text
+                except asyncio.TimeoutError:
+                    pass
+        # إذا ماكو أزرار، ناخذ النص كما هو
+    except Exception:
+        # أي خطأ بالضغط نرجع للنص الحالي
+        pass
 
+    # نستخرج المعرفات من النص النهائي
+    found_users = re.findall(r"@[\w\d_]{3,32}", final_text)
 
-@l313l.on(events.CallbackQuery(pattern=b"show:(.+)"))
-async def show_usernames(event):
-    username = event.pattern_match.group(1).decode("utf-8")
-    users = usernames_map.get(username, [])
-    if not users:
-        return await event.answer("❌ لا توجد معرفات إضافية.", alert=True)
+    # نخزن للرجوع لاحقًا (اختياري)
+    if found_users:
+        usernames_map[username] = {
+            "users": found_users,
+            "chat_id": user_event.chat_id,
+            "reply_to": user_event.id
+        }
 
-    msg = f"📂 المعرفات المرتبطة بـ {username}:\n" + "\n".join(users)
-    await event.edit(msg)
+    # نرسل المحتوى إليك مباشرة، مع القائمة إذا موجودة
+    out = final_text
+    if found_users:
+        out += "\n\n📂 المعرفات المرتبطة بـ {}:\n{}".format(
+            username, "\n".join(found_users)
+        )
+
+    await l313l.send_message(user_event.chat_id, out, reply_to=user_event.id)
+    await wait_msg.delete()
 
