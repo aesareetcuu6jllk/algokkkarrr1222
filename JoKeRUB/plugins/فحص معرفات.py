@@ -44,17 +44,17 @@ async def on_group_reply(event):
 
     user_event, username = pending_checks.pop(replied_msg_id)
 
+    # ما نرسل رسالة "يتم الجلب" — نتعامل مباشرة
     final_text = event.text or ""
 
+    # نضغط زر عرض كل اليوزرات تلقائياً (إذا موجود)
     try:
         if getattr(event, "buttons", None):
-            # نضغط الزر آليًا
             await event.click(text="عرض كل اليوزرات")
 
             msg_id = event.id
             bot_id = event.sender_id
 
-            # ننتظر تعديل الرسالة
             try:
                 edited = await l313l.wait_for(
                     events.MessageEdited(chats=CHECK_GROUP_LINK, ids=msg_id),
@@ -62,7 +62,6 @@ async def on_group_reply(event):
                 )
                 final_text = edited.text or final_text
             except asyncio.TimeoutError:
-                # أو ننتظر رسالة جديدة
                 try:
                     new_msg = await l313l.wait_for(
                         events.NewMessage(chats=CHECK_GROUP_LINK, from_users=bot_id),
@@ -74,14 +73,35 @@ async def on_group_reply(event):
     except Exception:
         pass
 
-    # استخراج المعرفات (اختياري)
-    found_users = re.findall(r"@[\w\d_]{3,32}", final_text)
+    # === استخراج البيانات وصياغتها بالقالب المطلوب ===
 
-    # نرسل المحتوى النهائي مباشرة مكان ما كتبت الأمر
-    out = final_text
-    if found_users:
-        out += "\n\n📂 المعرفات المرتبطة بـ {}:\n{}".format(
-            username, "\n".join(found_users)
-        )
+    # رصيد TON (أرقام مع فاصلة عشرية واستخدام , للفواصل)
+    ton_m = re.search(r'Balance\s*[:\-]?\s*([\d,]+(?:\.\d+)?)\s*TON', final_text, re.IGNORECASE)
+    ton_val = ton_m.group(1) if ton_m else "غير متوفر"
 
+    # قيمة بالدولار (نلتقط اللي بعد ≈ أو أي $)
+    usd_m = re.search(r'≈\s*\$?\s*([\d,]+(?:\.\d+)?)', final_text) or \
+            re.search(r'\$\s*([\d,]+(?:\.\d+)?)', final_text)
+    usd_val = usd_m.group(1) if usd_m else "غير متوفر"
+
+    # اليوزرات (نلتقط الكل ثم نزيل المكرر مع الحفاظ على الترتيب)
+    found_users = re.findall(r'@[\w\d_]{3,32}', final_text)
+    seen = set()
+    users_unique = []
+    for u in found_users:
+        if u not in seen:
+            users_unique.append(u)
+            seen.add(u)
+
+    users_count = len(users_unique)
+    users_line = " ".join(users_unique) if users_unique else "لا يوجد"
+
+    # الرسالة بالصياغة التي طلبتها بالضبط
+    out = (
+        "- معلومات عن المحفظة:-\n\n"
+        f"- Balance : {ton_val} TON ≈ ${usd_val}\n\n"
+        f"- Users Count ({users_count}) : {users_line}"
+    )
+
+    # نرسلها في نفس مكان ما كتبت الأمر وعلى شكل رد
     await l313l.send_message(user_event.chat_id, out, reply_to=user_event.id)
