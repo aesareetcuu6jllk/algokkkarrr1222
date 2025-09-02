@@ -6,7 +6,6 @@ from JoKeRUB import l313l
 CHECK_GROUP_LINK = "https://t.me/sekknft"
 
 pending_checks = {}
-usernames_map = {}
 
 @l313l.on(events.NewMessage(pattern=r"^.معرفاته(?:\s+(.*))?"))
 async def sandal_cmd(event):
@@ -36,7 +35,6 @@ async def sandal_cmd(event):
 
 @l313l.on(events.NewMessage(chats=CHECK_GROUP_LINK))
 async def on_group_reply(event):
-    # لازم يكون رد على رسالة فحص مالنا
     if not event.is_reply:
         return
 
@@ -46,33 +44,25 @@ async def on_group_reply(event):
 
     user_event, username = pending_checks.pop(replied_msg_id)
 
-    # رسالة انتظار بمكان تنفيذ الأمر
-    wait_msg = await user_event.reply("⏳ يتم جلب المعرفات ...")
-
-    # نحاول نضغط زر "عرض كل اليوزرات" تلقائي
     final_text = event.text or ""
+
     try:
-        # إذا موجود زر بنفس الرسالة
         if getattr(event, "buttons", None):
-            # نضغط الزر بالنص (تقدر تغيّر النص إذا يختلف)
+            # نضغط الزر آليًا
             await event.click(text="عرض كل اليوزرات")
 
-            # ننتظر تعديل الرسالة أو رسالة جديدة من نفس البوت
             msg_id = event.id
             bot_id = event.sender_id
 
-            edited = None
+            # ننتظر تعديل الرسالة
             try:
                 edited = await l313l.wait_for(
                     events.MessageEdited(chats=CHECK_GROUP_LINK, ids=msg_id),
                     timeout=8
                 )
-            except asyncio.TimeoutError:
-                edited = None
-
-            if edited:
                 final_text = edited.text or final_text
-            else:
+            except asyncio.TimeoutError:
+                # أو ننتظر رسالة جديدة
                 try:
                     new_msg = await l313l.wait_for(
                         events.NewMessage(chats=CHECK_GROUP_LINK, from_users=bot_id),
@@ -81,23 +71,13 @@ async def on_group_reply(event):
                     final_text = new_msg.text or final_text
                 except asyncio.TimeoutError:
                     pass
-        # إذا ماكو أزرار، ناخذ النص كما هو
     except Exception:
-        # أي خطأ بالضغط نرجع للنص الحالي
         pass
 
-    # نستخرج المعرفات من النص النهائي
+    # استخراج المعرفات (اختياري)
     found_users = re.findall(r"@[\w\d_]{3,32}", final_text)
 
-    # نخزن للرجوع لاحقًا (اختياري)
-    if found_users:
-        usernames_map[username] = {
-            "users": found_users,
-            "chat_id": user_event.chat_id,
-            "reply_to": user_event.id
-        }
-
-    # نرسل المحتوى إليك مباشرة، مع القائمة إذا موجودة
+    # نرسل المحتوى النهائي مباشرة مكان ما كتبت الأمر
     out = final_text
     if found_users:
         out += "\n\n📂 المعرفات المرتبطة بـ {}:\n{}".format(
@@ -105,5 +85,3 @@ async def on_group_reply(event):
         )
 
     await l313l.send_message(user_event.chat_id, out, reply_to=user_event.id)
-    await wait_msg.delete()
-
