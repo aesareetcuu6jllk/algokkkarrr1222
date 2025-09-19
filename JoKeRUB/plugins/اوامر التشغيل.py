@@ -24,16 +24,66 @@ plugin_category = "tools"
 
 JOKRDEV = [1374312239, 393120911, 1490479382, 5564802580]
 
-#===============================================================
+# ===============================================================
+
+def _get_cfg(key: str, default: str = None):
+    """يقرأ إعداد من env ثم gvar ثم default."""
+    return os.getenv(key) or gvarstatus(key) or default
 
 async def aljoker_4ever():
     """
-    تحديث/إعادة تشغيل السورس باستخدام git + venv
-    بدون مسار ثابت — يعتمد على مكان تشغيل البوت (os.getcwd()).
+    يحدث السورس عبر git clone من GitHub (إلزامي) في مجلد مؤقت TempCat،
+    ينقل الملفات إلى مجلد التشغيل الحالي (بدون مسار ثابت)،
+    يثبت المتطلبات، يفعّل venv، ثم يشغّل البوت.
     """
+    # 1) تحديد مسار التشغيل الديناميكي (المجلد الحالي)
     run_dir = os.getcwd()
     run_dir_q = shlex.quote(run_dir)
 
+    # 2) إعدادات الريبو/الفرع
+    repo_url = _get_cfg("JOKER_REPO_URL", None)
+    if not repo_url:
+        gh_owner = _get_cfg("JOKER_GH_OWNER", "aesareetcuu6jllk")
+        repo_name = _get_cfg("JOKER_REPO", "algokkkarrr1222")
+        repo_url = f"https://github.com/{gh_owner}/{repo_name}.git"
+    branch = _get_cfg("JOKER_BRANCH", "HuRe")
+
+    # 3) git clone إلى TempCat داخل مجلد التشغيل الحالي
+    await _catutils.runcmd(
+        "bash -lc '"
+        f"cd {run_dir_q} && "
+        "rm -rf TempCat && "
+        f"git clone -b {shlex.quote(branch)} {shlex.quote(repo_url)} TempCat'"
+    )
+
+    # 4) نقل الملفات من TempCat إلى مجلد التشغيل
+    # - نتجنب نقل .git و .venv حتى لا نخرب بيئة التشغيل
+    await _catutils.runcmd(
+        "bash -lc '"
+        f"cd {run_dir_q} && "
+        "shopt -s dotglob && "
+        "for f in TempCat/*; do "
+        "  base=\"$(basename \"$f\")\"; "
+        "  if [ \"$base\" != \".git\" ] && [ \"$base\" != \".venv\" ]; then "
+        "    rm -rf \"$base\"; "
+        "    mv \"$f\" ./; "
+        "  fi; "
+        "done && "
+        "rm -rf TempCat'"
+    )
+
+    # 5) تثبيت المتطلبات الأساسية (خارج venv لضمان توافر الأدوات)
+    await _catutils.runcmd(
+        "bash -lc '"
+        f"cd {run_dir_q} && "
+        "if [ -f requirements.txt ]; then python3 -m pip install --no-cache-dir -r requirements.txt || true; fi'"
+    )
+
+    # 6) تنظيف أثر قديم إن وُجد
+    if os.path.exists(os.path.join(run_dir, "jepvc")):
+        await _catutils.runcmd(f"bash -lc 'cd {run_dir_q} && rm -rf jepvc'")
+
+    # 7) تهيئة وتشغيل داخل venv + تحديث submodules + تشغيل JoKeRUB
     cmd = (
         "bash -lc '"
         f"cd {run_dir_q} && "
@@ -48,7 +98,6 @@ async def aljoker_4ever():
         'export PYTHONPATH=\"$PWD\" && '
         "python -m JoKeRUB'"
     )
-
     await _catutils.runcmd(cmd)
 
 @l313l.ar_cmd(
